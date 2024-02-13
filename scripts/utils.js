@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 
+// Utils taken from basin.js in the Beanstalk repo 
 function encodeWellImmutableData(
     aquifer,
     tokens,
@@ -94,4 +95,5 @@ async function deployWell(tokens, verbose = false, salt = ethers.constants.HashZ
 module.exports = {
     encodeWellImmutableData,
     encodeInitFunctionCall,
+    deployWell
 }

@@ -204,57 +204,6 @@ async function main() {
 
 }
 
-
-function encodeWellImmutableData(
-  aquifer,
-  tokens,
-  wellFunction,
-  pumps
-) {
-  let packedPumps = '0x';
-  for (let i = 0; i < pumps.length; i++) {
-      packedPumps = hre.ethers.solidityPacked(
-          ['bytes', 'address', 'uint256', 'bytes'],
-          [
-              packedPumps,            // previously packed pumps
-              pumps[i].target,       // pump address
-              pumps[i].length,       // pump data length
-              pumps[i].data          // pump data (bytes)
-          ]
-      )
-  }
-
-
-  immutableData = hre.ethers.solidityPacked(
-      [
-          'address',                  // aquifer address
-          'uint256',                  // number of tokens
-          'address',                  // well function address
-          'uint256',                  // well function data length
-          'uint256',                  // number of pumps
-          'address[]',                // tokens array
-          'bytes',                    // well function data (bytes)
-          'bytes'                     // packed pumps (bytes)
-      ], [
-      aquifer,                    // aquifer address
-      tokens.length,              // number of tokens
-      wellFunction.target,        // well function address
-      wellFunction.length,        // well function data length
-      pumps.length,               // number of pumps
-      tokens,                     // tokens array
-      wellFunction.data,          // well function data (bytes)
-      packedPumps                 // packed pumps (bytes)
-  ]
-  );
-  return immutableData
-}
-
-async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbol) {
-  const wellInterface = new hre.ethers.Interface(wellImplementationAbi)
-                                        // function   name,  symbol     
-  return wellInterface.encodeFunctionData('init', [wellName, wellSymbol]);
-}
-
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

@@ -7,8 +7,9 @@ require("@nomicfoundation/hardhat-toolbox");
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
 // Beware: NEVER put real Ether into testing accounts
-const PRIVATE_KEY = "<YOUR PK>";
+const PRIVATE_KEY = "<YOUR_PK>";
 const ALCHEMY_SEPOLIA_KEY = "<YOUR_ALCHEMY_KEY>";
+const ALCHEMY_MAINNET_KEY = "<YOUR_ALCHEMY_KEY>";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -17,7 +18,12 @@ module.exports = {
     sepolia: {
       url: ALCHEMY_SEPOLIA_KEY,
       accounts: [PRIVATE_KEY]
+    },
+    mainnet: {
+      url: ALCHEMY_MAINNET_KEY,
+      accounts: [PRIVATE_KEY]
     }
   },
+
   
 };

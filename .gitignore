@@ -101,3 +101,9 @@ Cargo.lock
 # VSCode settings
 .vscode/
 *.code-workspace
+
+hardhat.config.js
+
+artifacts/
+
+cache/

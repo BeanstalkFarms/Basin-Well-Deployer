@@ -1,6 +1,8 @@
 const hre = require("hardhat");
 
 // Utils taken from basin.js in the Beanstalk repo 
+
+// encodeWellImmutableData encodes the immutable data for a well
 function encodeWellImmutableData(
     aquifer,
     tokens,
@@ -45,12 +47,32 @@ function encodeWellImmutableData(
     return immutableData
   }
   
-  async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbol) {
+// Encodes the init function call for the well implementation
+async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbol) {
     const wellInterface = new hre.ethers.Interface(wellImplementationAbi)
                                           // function   name,  symbol     
     return wellInterface.encodeFunctionData('init', [wellName, wellSymbol]);
   }
 
+// constructs the default well name from the token addresses and the well function name
+async function getWellName(token1Address, token2Address, wellFunctionName) {
+    const token1 = await ethers.getContractAt('IERC20Metadata', token1Address);
+    const token2 = await ethers.getContractAt('IERC20Metadata', token2Address);
+    const token1Symbol = await token1.symbol();
+    const token2Symbol = await token2.symbol();
+    return token1Symbol + ':' + token2Symbol + ' ' + wellFunctionName + ' Well';
+}
+
+// constructs the default well symbol from the token addresses and the well function symbol
+async function getWellSymbol(token1Address, token2Address, wellFunctionSymbol) {
+    const token1 = await ethers.getContractAt('IERC20Metadata', token1Address);
+    const token2 = await ethers.getContractAt('IERC20Metadata', token2Address);
+    const token1Name = await token1.symbol();
+    const token2Name = await token2.symbol();
+    return token1Name + token2Name + wellFunctionSymbol + 'w';
+}
+
+// Assebles everything and deploys the well --> kept here for reference
 async function deployWell(tokens, verbose = false, salt = ethers.constants.HashZero) {
     const wellImplementation = await deployWellContract('Well');
     if (verbose) console.log("Deployed Well Implementation", wellImplementation.address);
@@ -95,5 +117,6 @@ async function deployWell(tokens, verbose = false, salt = ethers.constants.HashZ
 module.exports = {
     encodeWellImmutableData,
     encodeInitFunctionCall,
-    deployWell
+    getWellName,
+    getWellSymbol
 }

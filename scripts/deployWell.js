@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
 const { ethers } = require("hardhat");
-const {encodeInitFunctionCall, encodeWellImmutableData} = require('./utils');
+const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol} = require('./utils');
 
 // Sepolia addresses
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -36,7 +36,8 @@ async function main() {
   console.log("Note that Basin is under development and limited components are available at this time.\n");
   console.log('More information can be found at: https://docs.basin.exchange/ \n');
 
-  const questions = [
+  /////////////////////////////// COMPONENTS INPUT ///////////////////////////////
+  const componentQuestions = [
     {
       type: 'list',
       choices: ['Mainnet', 'Sepolia'],
@@ -72,31 +73,20 @@ async function main() {
       message: 'Select a well implementation to use for the Well. Read more about well implementations at: https://docs.basin.exchange/components/well#well-implementation',
       name: 'wellImplementation',
     },
-    {
-      type: 'input',
-      name: 'wellName',
-      message: 'Input a name for the well',
-    },
-    {
-      type: 'input',
-      name: 'wellSymbol',
-      message: 'Input a symbol for the well',
-    },
-    {
-      type: 'input',
-      name: 'salt',
-      message: 'Input a salt for the well. Note Use `salt == 0` to deploy a new Well with ---create--- . Use salt > 0 to deploy a new Well with ---create2--- ',
-    }
   ];
 
 
-  const { token1Address, token2Address, wellFunction, pump, wellImplementation, wellName, wellSymbol, salt } = await inquirer.prompt(questions);
+  const { token1Address, token2Address, wellFunction, pump, wellImplementation } = await inquirer.prompt(componentQuestions);
 
-  // map well function to address
+  // map well function to address and name
   let wellFunctionAddress;
+  let wellFunctionName;
+  let wellFunctionSymbol;
   switch (wellFunction) {
     case 'ConstantProduct2':
       wellFunctionAddress = network === 'Mainnet' ? constantProduct2AddressMainnet : constantProduct2AddressSepolia;
+      wellFunctionName = 'Constant Product 2';
+      wellFunctionSymbol = 'CP2';
       break;
     default:
       throw new Error('Invalid well function');
@@ -125,6 +115,29 @@ async function main() {
     default:
       throw new Error('Invalid well implementation');
   }
+
+  /////////////////////////////// SYMBOL , NAME , SALT INPUT ///////////////////////////////
+  const dataQuestions = [
+    {
+      type: 'input',
+      name: 'wellName',
+      message: 'Input a name for the well, press ENTER to use the default name.',
+      default: await getWellName(token1Address, token2Address, wellFunctionName),
+    },
+    {
+      type: 'input',
+      name: 'wellSymbol',
+      message: 'Input a symbol for the well, press ENTER to use the default symbol.',
+      default: await getWellSymbol(token1Address, token2Address, wellFunctionSymbol),
+    },
+    {
+      type: 'input',
+      name: 'salt',
+      message: 'Input a salt for the well. Note Use `salt == 0` to deploy a new Well with ---create--- . Use salt > 0 to deploy a new Well with ---create2--- ',
+    },
+  ];
+
+  const { wellName, wellSymbol, salt } = await inquirer.prompt(dataQuestions);
 
   console.log('\n///////////////// WELL DEPLOYMENT PARAMETERS ///////////////////////////');
   console.log('Token1: ', token1Address);
@@ -179,28 +192,29 @@ async function main() {
   console.log('Data encoded...');
   console.log('\nDeploying new well...');
   
+  
 
   // DEPLOY WELL FUNCTION CALL
 
-  // First we call the boreWell function with .callStatic to get the address of the new well
-  // This does not actually deploy the well, but returns the address of the new well
-  const newWell = await aquifer.callStatic.boreWell(
-    wellImplementation.address,
-    immutableData,
-    initData,
-    hre.ethers.ZeroHash
-  );
+  // // First we call the boreWell function with .callStatic to get the address of the new well
+  // // This does not actually deploy the well, but returns the address of the new well
+  // const newWell = await aquifer.callStatic.boreWell(
+  //   wellImplementation.address,
+  //   immutableData,
+  //   initData,
+  //   hre.ethers.ZeroHash
+  // );
 
-  // Then we call boreWell again, this time without .callStatic to actually deploy the well
-  await aquifer.boreWell(
-    wellImplementation.address,
-    immutableData,
-    initData,
-    hre.ethers.ZeroHash
-  );
+  // // Then we call boreWell again, this time without .callStatic to actually deploy the well
+  // await aquifer.boreWell(
+  //   wellImplementation.address,
+  //   immutableData,
+  //   initData,
+  //   hre.ethers.ZeroHash
+  // );
   
   console.log(`\n\n/////////////// ${wellName} WELL DEPLOYED //////////////////`);
-  console.log('New Well deployed to: ' , newWell);
+  console.log('New Well deployed to: 000000000000000000000000');
 
 }
 

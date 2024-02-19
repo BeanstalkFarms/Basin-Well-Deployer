@@ -52,24 +52,38 @@ async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbo
     const wellInterface = new hre.ethers.Interface(wellImplementationAbi)
                                           // function   name,  symbol     
     return wellInterface.encodeFunctionData('init', [wellName, wellSymbol]);
-  }
+}
+
+// gets the token symbol from the token address
+async function getTokenSymbol(tokenAddress) {
+    const token = await ethers.getContractAt('IERC20Metadata', tokenAddress);
+    return await token.symbol();
+}
 
 // constructs the default well name from the token addresses and the well function name
 async function getWellName(token1Address, token2Address, wellFunctionName) {
-    const token1 = await ethers.getContractAt('IERC20Metadata', token1Address);
-    const token2 = await ethers.getContractAt('IERC20Metadata', token2Address);
-    const token1Symbol = await token1.symbol();
-    const token2Symbol = await token2.symbol();
-    return token1Symbol + ':' + token2Symbol + ' ' + wellFunctionName + ' Well';
+    try {
+        const token1Symbol = await getTokenSymbol(token1Address);
+        const token2Symbol = await getTokenSymbol(token2Address);
+        return token1Symbol + ':' + token2Symbol + ' ' + wellFunctionName + ' Well';
+    } catch (e) {
+        console.log(e);
+        console.log("Error getting well name, Make sure the token addresses are correct and the tokens are deployed.");
+        process.exit(1);
+    }
 }
 
 // constructs the default well symbol from the token addresses and the well function symbol
 async function getWellSymbol(token1Address, token2Address, wellFunctionSymbol) {
-    const token1 = await ethers.getContractAt('IERC20Metadata', token1Address);
-    const token2 = await ethers.getContractAt('IERC20Metadata', token2Address);
-    const token1Name = await token1.symbol();
-    const token2Name = await token2.symbol();
-    return token1Name + token2Name + wellFunctionSymbol + 'w';
+    try {
+        const token1Name = await getTokenSymbol(token1Address);
+        const token2Name = await getTokenSymbol(token2Address);
+        return token1Name + token2Name + wellFunctionSymbol + 'w';
+    } catch (e) {
+        console.log(e);
+        console.log("Error getting well symbol, Make sure the token addresses are correct and the tokens are deployed.");
+        process.exit(1);
+    }
 }
 
 // Assebles everything and deploys the well --> kept here for reference
@@ -118,5 +132,6 @@ module.exports = {
     encodeWellImmutableData,
     encodeInitFunctionCall,
     getWellName,
-    getWellSymbol
+    getWellSymbol,
+    getTokenSymbol
 }

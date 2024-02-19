@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol} = require('./utils');
+const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol, getTokenSymbol} = require('./utils');
 
 // Sepolia addresses
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -147,8 +147,8 @@ async function main() {
   }
 
   console.log('\n///////////////// WELL DEPLOYMENT PARAMETERS ///////////////////////////');
-  console.log('Token1: ', token1Address);
-  console.log('Token2: ', token2Address);
+  console.log('Token1: ', token1Address + ' (' + await getTokenSymbol(token1Address) + ')' );
+  console.log('Token2: ', token2Address + ' (' + await getTokenSymbol(token2Address) + ')' );
   console.log('Well Function: ', wellFunctionAddress);
   console.log('Pump: ', pumpAddress);
   console.log('Well Implementation: ', wellImplementationAddress);
@@ -168,14 +168,13 @@ async function main() {
   
   /////////////////////////////// END PARAMETER INPUT ///////////////////////////////
 
-
   // Get deployed aquifier
   const deployedAquifierAddress = network === 'Mainnet' ? aquifierAddressMainnet : aquifierAddressSepolia;
 
   // Aquifier abi from etherscan
   const aquifierABI = JSON.parse(await fs.readFileSync('contracts/Aquifier_ABI.json', 'utf8'));
   
-  // get deployed aquifier
+  // get deployed aquifier contract
   const deployedAquifier = await hre.ethers.getContractAt(aquifierABI, deployedAquifierAddress);
 
   // Assemble data to encode
@@ -196,35 +195,46 @@ async function main() {
                                                               // abi   name,  symbol
   const initData = await encodeInitFunctionCall(wellImplementationABI, wellName, wellSymbol);
 
-  console.log('Encoded Immutable Data: ', immutableData);
-  console.log('Encoded Init Data: ', initData);
+  console.log('\nEncoded Immutable Data: ', immutableData);
+  console.log('\nEncoded Init Data: ', initData);
   
-  console.log('Data encoded...');
-  console.log('\nDeploying new well...');
-  
-  
+  console.log('\nData encoded...');
+  console.log('Deploying new well...');
+
+  // Predict well address from input parameters
+  let newWellAddress;
+  // Aquifer doesn't support using a salt of 0 to deploy a Well at a deterministic address.
+  // For this reason, we call boreWell with .callStatic to simulate the deployment and get the address of the new well.
+  if (salt === hre.ethers.ZeroHash) {
+    // THIS DOESN'T WORK FOR SOME REASON
+    // newWellAddress = await deployedAquifier.callStatic.boreWell(
+    //   wellImplementationAddress,
+    //   immutableData,
+    //   initData,
+    //   salt
+    // );
+  } else {
+    // If salt is not 0, we use the predictWellAddress function to get the address of the new well
+    newWellAddress = await deployedAquifier.predictWellAddress(
+      wellImplementationAddress,
+      immutableData,
+      salt
+    );
+    console.log(`Predicted Well Address: ${newWellAddress}`);
+  }
 
   // DEPLOY WELL FUNCTION CALL
 
-  // // First we call the boreWell function with .callStatic to get the address of the new well
-  // // This does not actually deploy the well, but returns the address of the new well
-  // const newWell = await deployedAquifier.callStatic.boreWell(
-  //   wellImplementation.address,
-  //   immutableData,
-  //   initData,
-  //   salt
-  // );
-
   // // Then we call boreWell again, this time without .callStatic to actually deploy the well
   // await deployedAquifier.boreWell(
-  //   wellImplementation.address,
+  //   wellImplementationAddress,
   //   immutableData,
   //   initData,
   //   salt
   // );
   
-  console.log(`\n\n/////////////// ${wellName} WELL DEPLOYED //////////////////`);
-  console.log('New Well deployed to: 000000000000000000000000');
+  console.log(`\n\n/////////////// ${wellName} DEPLOYED //////////////////`);
+  console.log(`New Well deployed to: ${newWellAddress}`);
 
 }
 

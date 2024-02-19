@@ -1,7 +1,6 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { ethers } = require("hardhat");
 const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol} = require('./utils');
 
 // Sepolia addresses
@@ -133,11 +132,19 @@ async function main() {
     {
       type: 'input',
       name: 'salt',
-      message: 'Input a salt for the well. Note Use `salt == 0` to deploy a new Well with ---create--- . Use salt > 0 to deploy a new Well with ---create2--- ',
+      message: 'Input a salt for the well. Note Use `salt == 0` to deploy a new Well with the CREATE opcode. Use salt > 0 to deploy a new Well with CREATE2 opcode. Press ENTER to skip. Salts are used for vanity addresses.',
     },
   ];
 
-  const { wellName, wellSymbol, salt } = await inquirer.prompt(dataQuestions);
+  let { wellName, wellSymbol, salt } = await inquirer.prompt(dataQuestions);
+
+  // salt validation
+  // salt is a bytes32 string
+  if ( salt === '' ) {
+    salt = hre.ethers.ZeroHash;
+  } else {
+    salt = hre.ethers.encodeBytes32String(salt);
+  }
 
   console.log('\n///////////////// WELL DEPLOYMENT PARAMETERS ///////////////////////////');
   console.log('Token1: ', token1Address);
@@ -149,9 +156,12 @@ async function main() {
   console.log('Well Symbol: ', wellSymbol);
   console.log('Salt: ', salt);
 
-  const { confirm } = await inquirer.prompt( { type: 'confirm', name: 'continue', message: 'A well will be deployed with the parameters above. Do you want to continue? (y/n)' , default: 'y' });
+  const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: 'A well will be deployed with the parameters above. Do you want to continue? (y/n)' , default: "y"});
   
-  if (confirm == false) {
+  console.log("confirm: ", proceed);
+
+  if (proceed == "n" || proceed == "No" || proceed == "no" || proceed == "N") {
+    console.log('\nWell deployment cancelled.')
     console.log('Exiting...');
     process.exit(0);
   }
@@ -198,19 +208,19 @@ async function main() {
 
   // // First we call the boreWell function with .callStatic to get the address of the new well
   // // This does not actually deploy the well, but returns the address of the new well
-  // const newWell = await aquifer.callStatic.boreWell(
+  // const newWell = await deployedAquifier.callStatic.boreWell(
   //   wellImplementation.address,
   //   immutableData,
   //   initData,
-  //   hre.ethers.ZeroHash
+  //   salt
   // );
 
   // // Then we call boreWell again, this time without .callStatic to actually deploy the well
-  // await aquifer.boreWell(
+  // await deployedAquifier.boreWell(
   //   wellImplementation.address,
   //   immutableData,
   //   initData,
-  //   hre.ethers.ZeroHash
+  //   salt
   // );
   
   console.log(`\n\n/////////////// ${wellName} WELL DEPLOYED //////////////////`);

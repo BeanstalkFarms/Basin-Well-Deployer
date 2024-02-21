@@ -77,6 +77,22 @@ async function main() {
 
   const { token1Address, token2Address, wellFunction, pump, wellImplementation } = await inquirer.prompt(componentQuestions);
 
+  /////////////////////////////////// SAFEGUARDS ///////////////////////////////////
+
+  // check if token1 and token2 are the same
+  if (token1Address === token2Address) {
+    console.log('\nError: token1 and token2 cannot be the same.');
+    process.exit(1);
+  }
+
+  // check if token1 and token2 are valid addresses
+  // token address length is 42 characters
+  // if the addresses dont exist, the script will fail at the metadata retrieval step
+  if (token1Address.length !== 42 || token2Address.length !== 42) {
+    console.log('\nError: token1 and token2 addresses are invalid.');
+    process.exit(1);
+  }
+
   // map well function to address and name
   let wellFunctionAddress;
   let wellFunctionName;
@@ -157,12 +173,11 @@ async function main() {
   console.log('Well Name: ', wellName);
   console.log('Well Symbol: ', wellSymbol);
   console.log('Salt: ', salt);
+  console.log('Network: ', network['name']);
 
   const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: 'A well will be deployed with the parameters above. Do you want to continue? (y/n)' , default: "y"});
   
-  console.log("confirm: ", proceed);
-
-  if (proceed == "n" || proceed == "No" || proceed == "no" || proceed == "N") {
+  if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
     console.log('\nWell deployment cancelled.')
     console.log('Exiting...');
     process.exit(0);
@@ -201,7 +216,6 @@ async function main() {
   console.log('\nEncoded Init Data: ', initData);
   
   console.log('\nData encoded...');
-  console.log('Deploying new well...');
 
   // Predict well address from input parameters
   // If salt is not 0, we use the predictWellAddress function to get the address of the new well
@@ -210,17 +224,18 @@ async function main() {
     immutableData,
     salt
   );
-  console.log(`Predicted Well Address: ${newWellAddress}`);
+  console.log(`\nPredicted Well Address: ${newWellAddress}`);
 
   // DEPLOY WELL FUNCTION CALL
+  console.log('Deploying new well...');
 
-  // // Then we call boreWell again, this time without .callStatic to actually deploy the well
-  // await deployedAquifier.boreWell(
-  //   wellImplementationAddress,
-  //   immutableData,
-  //   initData,
-  //   salt
-  // );
+  // Then we call boreWell again, this time without .callStatic to actually deploy the well
+  await deployedAquifier.boreWell(
+    wellImplementationAddress,
+    immutableData,
+    initData,
+    salt
+  );
   
   console.log(`\n\n/////////////// ${wellName} DEPLOYED //////////////////`);
   console.log(`New Well deployed to: ${newWellAddress}`);

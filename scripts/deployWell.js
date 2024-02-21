@@ -132,7 +132,7 @@ async function main() {
     {
       type: 'input',
       name: 'salt',
-      message: 'Input a salt for the well. Note Use `salt == 0` to deploy a new Well with the CREATE opcode. Use salt > 0 to deploy a new Well with CREATE2 opcode. Press ENTER to skip. Salts are used for vanity addresses.',
+      message: 'Input a salt for the well. Use a salt deploy a new Well with CREATE2 opcode. Press ENTER to add the default salt. Salts are used for vanity addresses and to predict the new well address.',
     },
   ];
 
@@ -141,7 +141,9 @@ async function main() {
   // salt validation
   // salt is a bytes32 string
   if ( salt === '' ) {
-    salt = hre.ethers.ZeroHash;
+    // if salt is empty, we use the bytes32 string of beanstalk
+    // this is to be able to predict the address of the well
+    salt = hre.ethers.encodeBytes32String("beanstalk");
   } else {
     salt = hre.ethers.encodeBytes32String(salt);
   }
@@ -202,26 +204,13 @@ async function main() {
   console.log('Deploying new well...');
 
   // Predict well address from input parameters
-  let newWellAddress;
-  // Aquifer doesn't support using a salt of 0 to deploy a Well at a deterministic address.
-  // For this reason, we call boreWell with .callStatic to simulate the deployment and get the address of the new well.
-  if (salt === hre.ethers.ZeroHash) {
-    // THIS DOESN'T WORK FOR SOME REASON
-    // newWellAddress = await deployedAquifier.callStatic.boreWell(
-    //   wellImplementationAddress,
-    //   immutableData,
-    //   initData,
-    //   salt
-    // );
-  } else {
-    // If salt is not 0, we use the predictWellAddress function to get the address of the new well
-    newWellAddress = await deployedAquifier.predictWellAddress(
-      wellImplementationAddress,
-      immutableData,
-      salt
-    );
-    console.log(`Predicted Well Address: ${newWellAddress}`);
-  }
+  // If salt is not 0, we use the predictWellAddress function to get the address of the new well
+  const newWellAddress = await deployedAquifier.predictWellAddress(
+    wellImplementationAddress,
+    immutableData,
+    salt
+  );
+  console.log(`Predicted Well Address: ${newWellAddress}`);
 
   // DEPLOY WELL FUNCTION CALL
 

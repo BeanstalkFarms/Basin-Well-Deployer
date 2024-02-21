@@ -239,6 +239,7 @@ async function main() {
   
   console.log(`\n\n/////////////// ${wellName} DEPLOYED //////////////////`);
   console.log(`New Well deployed to: ${newWellAddress}`);
+  console.log(`View the Aquifer transaction on Etherscan: https://${network === 'Mainnet' ? 'etherscan.io' : 'sepolia.etherscan.io'}/address/${deployedAquifierAddress}`);
 
 }
 

@@ -14,7 +14,7 @@ function encodeWellImmutableData(
         packedPumps = hre.ethers.solidityPacked(
             ['bytes', 'address', 'uint256', 'bytes'],
             [
-                packedPumps,            // previously packed pumps
+                packedPumps,           // previously packed pumps
                 pumps[i].target,       // pump address
                 pumps[i].length,       // pump data length
                 pumps[i].data          // pump data (bytes)

@@ -3,15 +3,17 @@ A CLI tool to set up and deploy composable liquidity pools on the Basin DEX.
 
 ## Getting Started
 
-Follow these steps to get started with this project:
+Follow these steps and open a terminal (cmd on windows) to get started with this project:
 
 1. **Install Node.js and npm:**
    - First check if you have Node.js and npm installed by running:
      ```sh
-     node -v
-     npm -v
+     node --version
+     npm --version
      ```
-   - If you don't, you can download Node.js and npm from [here](https://nodejs.org/en/download/).
+   - If you see version numbers, you're good to go!
+   - If you don't, you can download Node.js and npm for Windows and MacOS from [here](https://nodejs.org/en/download/).
+   - And for Linux distributions, you can follow the instructions [here](https://nodejs.org/en/download/package-manager).
 
 2. **Clone this repository and cd into it:**
    ```sh

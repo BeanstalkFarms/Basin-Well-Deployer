@@ -107,3 +107,5 @@ hardhat.config.js
 artifacts/
 
 cache/
+
+.env

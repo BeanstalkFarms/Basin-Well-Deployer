@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-
+require('dotenv').config()
 
 // Replace this private key with your Sepolia account private key
 // To export your private key from Coinbase Wallet, go to
@@ -7,9 +7,9 @@ require("@nomicfoundation/hardhat-toolbox");
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
 // Beware: NEVER put real Ether into testing accounts
-const PRIVATE_KEY = "<YOUR_PK>";
-const ALCHEMY_SEPOLIA_KEY = "<YOUR_ALCHEMY_KEY>";
-const ALCHEMY_MAINNET_KEY = "<YOUR_ALCHEMY_KEY>";
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const ALCHEMY_SEPOLIA_KEY = process.env.ALCHEMY_SEPOLIA_KEY;
+const ALCHEMY_MAINNET_KEY = process.env.ALCHEMY_MAINNET_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {

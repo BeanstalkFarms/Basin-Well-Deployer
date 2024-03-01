@@ -1,7 +1,9 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol, getTokenSymbol} = require('./utils');
+const {encodeInitFunctionCall, encodeWellImmutableData , getWellName , getWellSymbol, getTokenSymbol} = require('./wellDeploymentUtils');
+
+// TODO: Replace hardcoded addresses with regsitry for version selection
 
 // Sepolia addresses
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -229,7 +231,7 @@ async function main() {
   // DEPLOY WELL FUNCTION CALL
   console.log('Deploying new well...');
 
-  // Then we call boreWell again, this time without .callStatic to actually deploy the well
+  // Then we call boreWell again, to actually deploy the well
   await deployedAquifier.boreWell(
     wellImplementationAddress,
     immutableData,

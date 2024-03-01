@@ -2,7 +2,8 @@ const hre = require("hardhat");
 const fs = require('fs');
 
 
-async function main() {
+// Reads the vanity_info.json file and increments the nonce of the accounts to the wanted nonce
+async function setUpDeploymentAccountsNonce() {
 
     // Read the JSON file containing vanity addresses information
     const jsonString = await fs.readFileSync('data/vanity_info.json', 'utf-8');
@@ -63,9 +64,11 @@ async function sendZeroValueTx(signer, nonce) {
 }
 
 
-
-main().catch((error) => {
+setUpDeploymentAccountsNonce().catch((error) => {
     console.error(error);
     process.exitCode = 1;
   });
+
+
+module.exports = { setUpDeploymentAccountsNonce };
   

@@ -25,7 +25,7 @@ Follow these steps and open a terminal (cmd on windows) to get started with this
    npm install
    ```
 
-4. **Add your ```PRIVATE_KEY``` and ```ALCHEMY_RPC_URLS``` to the ```hardhat.config.js``` file** 
+4. **Create a ```.env``` file and add your ```PRIVATE_KEY``` and ```ALCHEMY_RPC_URL``` as shown in the ```.env.example```.**
 - To export your private key from Metamask, open Metamask and go to Account Details > Export Private Key. 
 
 - You can find detailed guides on how to export your key [here](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key).
@@ -33,7 +33,6 @@ Follow these steps and open a terminal (cmd on windows) to get started with this
 - Beware: NEVER share your private key with anyone and dont commit it to a public repository.
 
 - To get an Alchemy RPC URL, sign up for an account at [Alchemy](https://www.alchemy.com/) and create a new project. Select the Ethereum network you want to deploy to and copy the https URL.
-
 
 4. **Run the CLI script:**
    ```sh

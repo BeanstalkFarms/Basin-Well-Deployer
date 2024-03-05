@@ -3,23 +3,20 @@ const fs = require('fs');
 
 
 // Reads the vanity_info.json file and increments the nonce of the accounts to the wanted nonce
-async function setUpDeploymentAccountsNonce() {
+async function setUpDeploymentAccountNonce() {
 
     // Read the JSON file containing vanity addresses information
     const jsonString = await fs.readFileSync('data/vanity_info.json', 'utf-8');
-    const targetAddressesInfo = JSON.parse(jsonString);
+    const targetAddressInfo = JSON.parse(jsonString);
 
     // Increment the nonce for each vanity address
-    for (let i = 0; i < targetAddressesInfo.length; i++) {
-        const targetAddressInfo = targetAddressesInfo[i];
-        const targetAddress = targetAddressInfo.address.toString();
-        const contracts = targetAddressInfo.contracts;
-        const targetNonce = getContractNonce(contracts);
-        const targetPrivateKey = targetAddressInfo.private.toString();
-        console.log("-----------------------------------------------------------------")
-        console.log(`Incrementing nonce for ${targetAddress} to ${targetNonce}...`);
-        await incrementAccountToWantedNonce(targetAddress, targetNonce, targetPrivateKey);
-    }
+    const targetAddress = targetAddressInfo.address.toString();
+    const contracts = targetAddressInfo.contracts;
+    const targetNonce = getContractNonce(contracts);
+    const targetPrivateKey = targetAddressInfo.private.toString();
+    console.log("-----------------------------------------------------------------")
+    console.log(`Incrementing nonce for ${targetAddress} to ${targetNonce}...`);
+    await incrementAccountToWantedNonce(targetAddress, targetNonce, targetPrivateKey);
 }
 
 // Extracts the nonce from the contracts json object
@@ -63,12 +60,21 @@ async function sendZeroValueTx(signer, nonce) {
     await tx.wait();
 }
 
+/////////////////////////////// NONCE HANDLING FROM BASIN.JS ///////////////////////////////
+async function increaseToNonce(account, nonce) {
+    const currentNonce = await ethers.provider.getTransactionCount(account.address)
+    await increaseNonce(account, nonce-currentNonce-1)
+}
+  
+async function increaseNonce(account, n = 1) {
+    for (let i = 0; i < n; i++) {
+      await account.sendTransaction({
+          to: account.address,
+          value: ethers.utils.parseEther("0"),
+      })
+    }
+}
 
-setUpDeploymentAccountsNonce().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
 
-
-module.exports = { setUpDeploymentAccountsNonce };
+module.exports = { setUpDeploymentAccountNonce };
   

@@ -1,7 +1,9 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-var exec = require('child_process').exec;
+const { handleVanityAddress } = require('./vanityAddressUtils');
+const { getWellContractFactory, getDeploymentAccount } = require('./componentDeploymentUtils');
+const { handleExchangeFunctionInput, handlePumpInput, handleWellImplementationInput } = require('./componentInput');
 
 
 
@@ -33,7 +35,7 @@ async function main() {
         },
         {
             type: 'list',
-            choices: ['Exchange', 'Pump', 'Implementation'],
+            choices: ['Exchange Function', 'Pump', 'Well Implementation'],
             message: 'Select the component type you would like to deploy',
             name: 'componentType',
         },
@@ -44,23 +46,41 @@ async function main() {
           default: true,
         }]
 
-    // if vanity , excecute the vanity address generation script
-
 
     const { network, componentType, vanity } = await inquirer.prompt(componentQuestions);
-
+    
+    // if vanity , excecute the vanity address generation script
     if (vanity) {
-
-        exec('ls', function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
-            if (error !== null) {
-                 console.log('exec error: ' + error);
-            }
-        });
+        await handleVanityAddress();
     }
 
-    // Promp user for the component type --> exchange, pump, or implementation
+    // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
+    const deploymentAccount = (vanity) ? getDeploymentAccount() : hre.ethers.getSigner()
+
+    /////////////////////////////// COMPONENTS INPUT ///////////////////////////////
+
+    // ask for type of component , version of component and parameters specific to that component
+    // For exchange function --> stableswap , constant product2
+    // for pump --> multiflow pump with additional parameters based on version
+    // for well implementation --> standard well implementation
+
+    let componentName = '';
+    if (componentType === 'Exchange Function') {
+        componentName = await handleExchangeFunctionInput();
+    } else if (componentType === 'Pump') {
+        componentName = await handlePumpInput();
+    } else if (componentType === 'Well Implementation') {
+        componentName = await handleWellImplementationInput();
+    }
+    console.log("\nComponent name is: ", componentName);
+
+    // Promp user for the component type --> exchange, pump, or implementation --> done --> handle version and get factory
+
+    // Get the factory for the component
+                                                // name,     account
+    componentFactory = getWellContractFactory(componentName, deploymentAccount);
+
+    console.log("\nFactory is formed from npm package for the component: ", componentName);
 
     // Prompt user for the component parameters
 

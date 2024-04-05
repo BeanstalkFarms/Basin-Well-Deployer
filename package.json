@@ -14,7 +14,8 @@
     "hardhat": "^2.19.5"
   },
   "dependencies": {
-    "@beanstalk/wells": "^1.1.0-prerelease0",
+    "@beanstalk/wells": "0.4.1",
+    "@beanstalk/wells1.1": "npm:@beanstalk/wells@1.1.0-prerelease0",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "ethers": "^6.10.0",

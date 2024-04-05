@@ -5,6 +5,8 @@ node_modules
 # VS Code workspace config
 workspace.code-workspace
 
+data/vanityAddress.json
+
 .DS_Store
 
 # Below is Github's node gitignore template,
@@ -109,3 +111,4 @@ artifacts/
 cache/
 
 .env
+

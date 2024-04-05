@@ -6,7 +6,6 @@ const { getWellContractFactory, getDeploymentAccount } = require('./componentDep
 const { handleExchangeFunctionInput, handlePumpInput, handleWellImplementationInput } = require('./componentInput');
 
 
-
 async function main() {
     const asciiArt = ` 
   
@@ -46,13 +45,10 @@ async function main() {
           default: true,
         }]
 
-
     const { network, componentType, vanity } = await inquirer.prompt(componentQuestions);
     
     // if vanity , excecute the vanity address generation script
-    if (vanity) {
-        await handleVanityAddress();
-    }
+    if (vanity) { await handleVanityAddress(); }
 
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
     const deploymentAccount = (vanity) ? getDeploymentAccount() : hre.ethers.getSigner()
@@ -66,36 +62,18 @@ async function main() {
 
     let componentName = '';
     if (componentType === 'Exchange Function') {
-        componentName = await handleExchangeFunctionInput();
+        componentName = await deployFunction();
     } else if (componentType === 'Pump') {
-        componentName = await handlePumpInput();
+        componentName = await deployPump();
     } else if (componentType === 'Well Implementation') {
-        componentName = await handleWellImplementationInput();
+        componentName = await deployWellImplementation();
     }
-    console.log("\nComponent name is: ", componentName);
-
-    // Promp user for the component type --> exchange, pump, or implementation --> done --> handle version and get factory
-
-    // Get the factory for the component
-                                                // name,     account
-    componentFactory = getWellContractFactory(componentName, deploymentAccount);
-
-    console.log("\nFactory is formed from npm package for the component: ", componentName);
-
-    // Prompt user for the component parameters
-
-    // Deploy the component
 
     // research what parameters each component needs
 
     // FOR BEAN:WSTETH need to  deploy new pump, deploy new constant product 2 well function
 
 }
-
-
-
-
-
 
 
 

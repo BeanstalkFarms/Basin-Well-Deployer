@@ -1,25 +1,5 @@
 const inquirer = require('inquirer');
-
-async function handleExchangeFunctionInput() {
-
-    const exchangeFunctionQuestions = [
-        {
-            type: 'list',
-            choices: ['ConstantProduct2'],
-            message: 'Select the exchange function you would like to deploy',
-            name: 'exchangeFunction',
-        }
-    ]
-
-    const { exchangeFunction } = await inquirer.prompt(exchangeFunctionQuestions);
-
-    // map the input to the actual exchange function name json from npm package
-    let exchangeFunctionMap = {
-        'ConstantProduct2': 'ConstantProduct2',
-    }
-
-    return exchangeFunctionMap[exchangeFunction];
-}
+const { handlePumpParameters } = require('./componentParametersInput');
 
 async function handlePumpInput() {
     
@@ -29,17 +9,32 @@ async function handlePumpInput() {
             choices: ['Multiflow Pump'],
             message: 'Select the pump you would like to deploy',
             name: 'pump',
+        },
+        {
+            type: 'list',
+            choices: ['Pump 1.0', 'Pump 1.1'],
+            message: 'Select the version of the pump you would like to deploy',
+            name: 'pumpVersion',
         }
     ]
 
-    const { pump } = await inquirer.prompt(pumpQuestions);
+    // Pump 1.0
+    // constructor(bytes16 _maxPercentIncrease, bytes16 _maxPercentDecrease, uint256 _capInterval, bytes16 _alpha) {
+
+    // Pump 1.1
+    // (bytes16 alpha, uint256 capInterval, CapReservesParameters memory crp) =
+    // abi.decode(data, (bytes16, uint256, CapReservesParameters));
+
+    const {pump, pumpVersion} = await inquirer.prompt(pumpQuestions);
+
+    const parameters = await handlePumpParameters(pump, pumpVersion);
 
     // map the input to the actual pump name json from npm package
     let pumpMap = {
         'Multiflow Pump': 'MultiFlowPump',
     }
     
-    return pumpMap[pump];
+    return pumpMap[pump] , parameters;
 }
 
 async function handleWellImplementationInput() {

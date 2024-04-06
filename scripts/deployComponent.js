@@ -1,10 +1,8 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { handleVanityAddress } = require('./vanityAddressUtils');
-const { getWellContractFactory, getDeploymentAccount } = require('./componentDeploymentUtils');
-const { handleExchangeFunctionInput, handlePumpInput, handleWellImplementationInput } = require('./componentInput');
-
+const { handleVanityAddress } = require('./components/vanityAddressUtils');
+const { getWellContractFactory, getDeploymentAccount } = require('./components/componentDeploymentUtils');
 
 async function main() {
     const asciiArt = ` 

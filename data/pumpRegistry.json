@@ -1,0 +1,36 @@
+{
+    "versions": [
+      {
+        "version": "1.0",
+        "file_name": "MultiFlowPump.sol",
+        "npm_url": "https://www.npmjs.com/package/@beanstalk/wells/v/0.4.1",
+        "parameters": [
+          {
+            "name": "_maxPercentIncrease",
+            "type": "input",
+            "sol_type": "bytes16",
+            "message": "Enter the maximum percent increase allowed in a single block. Must be in quadruple precision format"
+          },
+          {
+            "name": "_maxPercentDecrease",
+            "sol_type": "bytes16",
+            "type": "input",
+            "message": "Enter the maximum percent decrease allowed in a single block. Must be in quadruple precision format"
+          },
+          {
+            "name": "_capInterval",
+            "type": "input",
+            "sol_type": "uint256",
+            "message": "Enter how often to increase the magnitude of the cap on the change in reserve in seconds"
+          },
+          {
+            "name": "_alpha",
+            "type": "input",
+            "sol_type": "bytes16",
+            "message": "Enter the geometric EMA constant. Must be in quadruple precision format"
+          }
+        ]
+      }
+    ]
+  }
+  

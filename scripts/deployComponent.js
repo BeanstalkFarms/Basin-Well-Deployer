@@ -4,6 +4,7 @@ const fs = require('fs');
 const { generateVanityAddress } = require('./components/vanityAddressUtils');
 const { getDeploymentAccount } = require('./components/componentDeploymentUtils');
 const { deployExchangeFunction } = require('./components/deployExchangeFunction')
+const { deployPump } = require('./components/deployPump')
 
 async function main() {
     const asciiArt = ` 
@@ -62,9 +63,9 @@ async function main() {
     let componentName = '';
     if (componentType === 'Exchange Function') {
         componentName = await deployExchangeFunction(vanity, deploymentAccount, 3);
+    } else if (componentType === 'Pump') {
+        componentName = await deployPump(vanity, deploymentAccount, 3);
     }
-    // } else if (componentType === 'Pump') {
-    //     componentName = await deployPump();
     // } else if (componentType === 'Well Implementation') {
     //     componentName = await deployWellImplementation();
     // }

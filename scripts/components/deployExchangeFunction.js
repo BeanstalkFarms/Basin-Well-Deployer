@@ -34,17 +34,14 @@ async function deployExchangeFunction(vanity, account, nonce) {
     // map the input to the actual exchange function name json from npm package
     const componentName = exchangeFunctionMap[exchangeFunction];
 
-    // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
-    const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
+    await setSignerBalance(account.address)
 
-    await setSignerBalance(deploymentAccount.address)
-
-    await askForConfirmation(componentName, exchangeFunctionVersion, nonce, deploymentAccount.address, false)
+    await askForConfirmation(componentName, exchangeFunctionVersion, nonce, account.address, false)
 
     if (vanity) {
-        await deployWellContractAtNonce(componentName, [], deploymentAccount, exchangeFunctionVersion, nonce);
+        await deployWellContractAtNonce(componentName, [], account, exchangeFunctionVersion, nonce);
     } else {
-        await deployWellContract(componentName, [], deploymentAccount, exchangeFunctionVersion);
+        await deployWellContract(componentName, [], account, exchangeFunctionVersion);
     }   
 
 }

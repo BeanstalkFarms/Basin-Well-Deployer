@@ -9,7 +9,6 @@ const BASE_STRING = './node_modules/@beanstalk/wells';
 // Fetches the json file for the contract from the basin npm package and returns the contract factory
 async function getWellContractFactory(name, account, version) {
     const FINAL_BASE_STRING = BASE_STRING + (version !== "1.0" ? version : '') + '/out';
-    console.log(FINAL_BASE_STRING)
     const contractJson = JSON.parse(await fs.readFileSync(`${FINAL_BASE_STRING}/${name}.sol/${name}.json`))
     return await hre.ethers.getContractFactory(
         contractJson.abi,
@@ -28,11 +27,11 @@ async function deployWellContractAtNonce(name, arguments = [], account, version,
 // Deploys the well contract at the next nonce
 async function deployWellContract(name, arguments = [], account, version) {
     const Contract = await getWellContractFactory(name, account, version);
-    console.log(`Factory for ${name} fetched from npm package`);
-    console.log(`Deploying ${name} contract...`);
+    console.log(`\nFactory for ${name} fetched from npm package`);
+    console.log(`\nDeploying ${name} contract...`);
     const contract = await Contract.deploy(...arguments);
     await contract.waitForDeployment();
-    console.log(`Contract deployed at address: ${await contract.getAddress()}`);
+    console.log(`\nContract deployed at address: ${await contract.getAddress()}`);
     return contract;
 }
 

@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 
-
 async function askForConfirmation(componentName, componentVersion, nonce, deployerAddress, isWell) {
     let message = ''
     if (isWell) {
@@ -17,6 +16,19 @@ async function askForConfirmation(componentName, componentVersion, nonce, deploy
     }
 }
 
+// Function to find the parameters for a given component version form the registry json
+function findParametersByVersionInRegistryJson(version, jsonData ) {
+    const versionInfo = jsonData.versions.find(v => v.version === version);
+    if (versionInfo) {
+      return versionInfo.parameters;
+    } else {
+      console.log('Version for specified component not found');
+      return null;
+    }
+}
+  
+
 module.exports = {
-    askForConfirmation
+    askForConfirmation,
+    findParametersByVersionInRegistryJson
 }

@@ -177,13 +177,7 @@ async function main() {
   console.log('Salt: ', salt);
   console.log('Network: ', network['name']);
 
-  const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: 'A well will be deployed with the parameters above. Do you want to continue? (y/n)' , default: "y"});
-  
-  if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
-    console.log('\nWell deployment cancelled.')
-    console.log('Exiting...');
-    process.exit(0);
-  }
+  askForConfirmation(undefined, undefined, undefined, undefined, true)
   
   /////////////////////////////// END PARAMETER INPUT ///////////////////////////////
 

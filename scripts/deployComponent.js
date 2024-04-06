@@ -1,8 +1,9 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { handleVanityAddress } = require('./components/vanityAddressUtils');
-const { getWellContractFactory, getDeploymentAccount } = require('./components/componentDeploymentUtils');
+const { generateVanityAddress } = require('./components/vanityAddressUtils');
+const { getDeploymentAccount } = require('./components/componentDeploymentUtils');
+const { deployExchangeFunction } = require('./components/deployExchangeFunction')
 
 async function main() {
     const asciiArt = ` 
@@ -46,12 +47,12 @@ async function main() {
     const { network, componentType, vanity } = await inquirer.prompt(componentQuestions);
     
     // if vanity , excecute the vanity address generation script
-    if (vanity) { await handleVanityAddress(); }
+    if (vanity) { await generateVanityAddress(); }
 
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
-    const deploymentAccount = (vanity) ? getDeploymentAccount() : hre.ethers.getSigner()
+    const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
 
-    /////////////////////////////// COMPONENTS INPUT ///////////////////////////////
+    /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
     // ask for type of component , version of component and parameters specific to that component
     // For exchange function --> stableswap , constant product2
@@ -60,20 +61,14 @@ async function main() {
 
     let componentName = '';
     if (componentType === 'Exchange Function') {
-        componentName = await deployFunction();
-    } else if (componentType === 'Pump') {
-        componentName = await deployPump();
-    } else if (componentType === 'Well Implementation') {
-        componentName = await deployWellImplementation();
+        componentName = await deployExchangeFunction(vanity, deploymentAccount, 3);
     }
-
-    // research what parameters each component needs
-
-    // FOR BEAN:WSTETH need to  deploy new pump, deploy new constant product 2 well function
-
+    // } else if (componentType === 'Pump') {
+    //     componentName = await deployPump();
+    // } else if (componentType === 'Well Implementation') {
+    //     componentName = await deployWellImplementation();
+    // }
 }
-
-
 
 main().catch((error) => {
     console.error(error);

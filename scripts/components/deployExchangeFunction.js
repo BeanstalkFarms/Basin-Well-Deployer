@@ -1,11 +1,11 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { handleVanityAddress } = require('./vanityAddressUtils');
-const { getWellContractFactory, getDeploymentAccount, deployWellContract } = require('./componentDeploymentUtils');
+const { askForConfirmation } = require('../generalUtils')
+const { getWellContractFactory, getDeploymentAccount, deployWellContract, deployWellContractAtNonce } = require('./componentDeploymentUtils');
 
 
-async function deployFunction() {
+async function deployExchangeFunction(vanity, account, nonce) {
 
     const exchangeFunctionQuestions = [
         {
@@ -34,21 +34,25 @@ async function deployFunction() {
     // map the input to the actual exchange function name json from npm package
     const componentName = exchangeFunctionMap[exchangeFunction];
 
-    console.log(`Deploying ${componentName} version ${exchangeFunctionVersion}...`)
-
-    const vanity = false;
-
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
     const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
 
-                             // name,   arguments, account, version
-    await deployWellContract(componentName, [], deploymentAccount, exchangeFunctionVersion);
+    await setSignerBalance(deploymentAccount.address)
+
+    await askForConfirmation(componentName, exchangeFunctionVersion, nonce, deploymentAccount.address, false)
+
+    if (vanity) {
+        await deployWellContractAtNonce(componentName, [], deploymentAccount, exchangeFunctionVersion, nonce);
+    } else {
+        await deployWellContract(componentName, [], deploymentAccount, exchangeFunctionVersion);
+    }   
 
 }
 
+async function setSignerBalance(signerAddress) {  
+      await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
+}
 
-
-deployFunction().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
+module.exports = {
+    deployExchangeFunction
+}

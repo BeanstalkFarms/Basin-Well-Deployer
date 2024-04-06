@@ -9,19 +9,21 @@ async function deployAtNonce(name, account, nonce, verbose = false, parameters =
   
   async function increaseToNonce(account, nonce) {
     const currentNonce = await ethers.provider.getTransactionCount(account.address)
+    console.log("Current Nonce: " + currentNonce)
+    console.log("Target Nonce: " + nonce)
     await increaseNonce(account, nonce-currentNonce-1)
   }
   
-  async function increaseNonce(account, n = 1) {
+  async function increaseNonce(account, n) {
       for (let i = 0; i < n; i++) {
+        console.log("////////////////////////// Increasing nonce ///////////////////////////")
         await account.sendTransaction({
             to: account.address,
-            value: ethers.utils.parseEther("0"),
+            value: hre.ethers.parseEther("0"),
         })
       }
   }
   
-
 module.exports = {
     deployAtNonce,
     increaseToNonce,

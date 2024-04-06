@@ -2,7 +2,7 @@ const fs = require('fs');
 const hre = require('hardhat');
 const { increaseToNonce } = require('./nonces');
 
-// Next versions just apeend the version to the base string after the /wells folder
+// Next versions just append the version to the base string after the /wells folder
 // eg ./node_modules/@beanstalk/wells1.1/out ...
 const BASE_STRING = './node_modules/@beanstalk/wells';
 
@@ -20,9 +20,9 @@ async function getWellContractFactory(name, account, version) {
 
 // Deploys the well contract at a specific nonce
 // If the account is not at the nonce, it will increase the nonce to the specified nonce
-async function deployWellContractAtNonce(name, nonce, arguments = [], account) {
+async function deployWellContractAtNonce(name, arguments = [], account, version, nonce) {
     await increaseToNonce(account, nonce);
-    return await deployWellContract(name, arguments, account);
+    return await deployWellContract(name, arguments, account, version);
 }
 
 // Deploys the well contract at the next nonce

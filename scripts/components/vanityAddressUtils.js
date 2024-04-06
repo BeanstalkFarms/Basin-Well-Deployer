@@ -3,7 +3,7 @@ var exec = require('child_process').exec;
 const inquirer = require('inquirer');
 
 // Generates info for a component vanity address and writes it to a file
-async function handleVanityAddress() {
+async function generateVanityAddress() {
 
     // ask for pattern
     patternQuestion = {
@@ -32,5 +32,5 @@ async function handleVanityAddress() {
 }
 
 module.exports = {
-    handleVanityAddress,
+    generateVanityAddress,
 }

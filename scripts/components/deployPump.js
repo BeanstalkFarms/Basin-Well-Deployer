@@ -2,8 +2,8 @@ const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
 const { askForConfirmation } = require('../generalUtils')
-const { getWellContractFactory, getDeploymentAccount, deployWellContract, deployWellContractAtNonce } = require('./componentDeploymentUtils');
-const { findParametersByVersionInRegistryJson } = require('../generalUtils');
+const { deployWellContract, deployWellContractAtNonce } = require('./componentDeploymentUtils');
+const { findParametersByVersionInRegistryJson, getLatestReleaseVersion } = require('../generalUtils');
 
 async function deployPump(vanity, account, nonce) {
 
@@ -13,23 +13,16 @@ async function deployPump(vanity, account, nonce) {
           choices: ['Multiflow Pump'],
           message: 'Select the exchange function you would like to deploy',
           name: 'pump',
-      },
-      {
-          type: 'list',
-          choices: ['v1.0', 'v1.1'],
-          message: 'Select the version of the function you would like to deploy',
-          name: 'pumpVersion',
       }
     ]
 
-    let { pump, pumpVersion } = await inquirer.prompt(pumpQuestions);
+    let { pump } = await inquirer.prompt(pumpQuestions);
 
     let pumpMap = {
         'Multiflow Pump': 'MultiFlowPump',
     }
 
-    // clean the "v" from the version
-    pumpVersion = pumpVersion.replace('v', '');
+    const pumpVersion = getLatestReleaseVersion();
 
     // map the input to the actual exchange function name json from npm package
     const componentName = pumpMap[pump];
@@ -59,7 +52,7 @@ async function deployPump(vanity, account, nonce) {
 
     await setSignerBalance(account.address)
 
-    await askForConfirmation(componentName, pumpVersion, nonce, account.address, false)
+    await askForConfirmation(componentName, pumpVersion, account.address, false)
 
     if (vanity) {
         await deployWellContractAtNonce(componentName, pumpParamsArray, account, pumpVersion, nonce);

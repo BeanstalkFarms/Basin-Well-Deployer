@@ -57,11 +57,6 @@ async function main() {
 
     /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
-    // ask for type of component , version of component and parameters specific to that component
-    // For exchange function --> stableswap , constant product2
-    // for pump --> multiflow pump with additional parameters based on version
-    // for well implementation --> standard well implementation
-
     if (componentType === 'Exchange Function') {
         await deployExchangeFunction(vanity, deploymentAccount, 3);
     } else if (componentType === 'Pump') {

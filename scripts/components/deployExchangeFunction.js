@@ -1,9 +1,8 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
-const fs = require('fs');
 const { askForConfirmation } = require('../generalUtils')
-const { getWellContractFactory, getDeploymentAccount, deployWellContract, deployWellContractAtNonce } = require('./componentDeploymentUtils');
-
+const { deployWellContract, deployWellContractAtNonce } = require('./componentDeploymentUtils');
+const { getLatestReleaseVersion } = require('../generalUtils');
 
 async function deployExchangeFunction(vanity, account, nonce) {
 
@@ -13,31 +12,24 @@ async function deployExchangeFunction(vanity, account, nonce) {
             choices: ['ConstantProduct2'],
             message: 'Select the exchange function you would like to deploy',
             name: 'exchangeFunction',
-        },
-        {
-            type: 'list',
-            choices: ['v1.0', 'v1.1'],
-            message: 'Select the version of the function you would like to deploy',
-            name: 'exchangeFunctionVersion',
         }
     ]
 
-    let { exchangeFunction, exchangeFunctionVersion } = await inquirer.prompt(exchangeFunctionQuestions);
+    let { exchangeFunction } = await inquirer.prompt(exchangeFunctionQuestions);
 
     // map the exchange function to the actual json contract name
     let exchangeFunctionMap = {
         'ConstantProduct2': 'ConstantProduct2',
     }
 
-    // clean the "v" from the version
-    exchangeFunctionVersion = exchangeFunctionVersion.replace('v', '');
+    const exchangeFunctionVersion = getLatestReleaseVersion();
 
     // map the input to the actual exchange function name json from npm package
     const componentName = exchangeFunctionMap[exchangeFunction];
 
     await setSignerBalance(account.address)
 
-    await askForConfirmation(componentName, exchangeFunctionVersion, nonce, account.address, false)
+    await askForConfirmation(componentName, exchangeFunctionVersion, account.address, false)
 
     if (vanity) {
         await deployWellContractAtNonce(componentName, [], account, exchangeFunctionVersion, nonce);

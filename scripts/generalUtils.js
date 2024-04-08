@@ -1,11 +1,11 @@
 const inquirer = require('inquirer');
 
-async function askForConfirmation(componentName, componentVersion, nonce, deployerAddress, isWell) {
+async function askForConfirmation(componentName, componentVersion, deployerAddress, isWell) {
     let message = ''
     if (isWell) {
         message = 'A well will be deployed with the parameters above. Do you want to continue? (y/n)'
     } else {
-        message = `Are you sure you want to deploy ${componentName} version ${componentVersion} with nonce ${nonce} by deployer account ${deployerAddress} ?`
+        message = `Are you sure you want to deploy ${componentName} version ${componentVersion} by deployer account ${deployerAddress} ?`
     }
     const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: message , default: "y"});
   
@@ -16,7 +16,12 @@ async function askForConfirmation(componentName, componentVersion, nonce, deploy
     }
 }
 
-// Function to find the parameters for a given component version form the registry json
+// returns the latest release version of the wells npm package
+function getLatestReleaseVersion() {
+  return '1.1';
+}
+
+// Function to find the parameters for a given component version from their respective registry json
 function findParametersByVersionInRegistryJson(version, jsonData ) {
     const versionInfo = jsonData.versions.find(v => v.version === version);
     if (versionInfo) {
@@ -26,9 +31,9 @@ function findParametersByVersionInRegistryJson(version, jsonData ) {
       return null;
     }
 }
-  
 
 module.exports = {
     askForConfirmation,
-    findParametersByVersionInRegistryJson
+    findParametersByVersionInRegistryJson,
+    getLatestReleaseVersion
 }

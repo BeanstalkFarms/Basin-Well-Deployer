@@ -1,6 +1,6 @@
 const fs = require('fs');
 const hre = require('hardhat');
-const { increaseToNonce } = require('./nonces');
+const { increaseToNonce } = require('./vanityAddressUtils');
 
 // Next versions just append the version to the base string after the /wells folder
 // eg ./node_modules/@beanstalk/wells1.1/out ...

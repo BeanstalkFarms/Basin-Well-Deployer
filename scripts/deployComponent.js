@@ -4,7 +4,9 @@ const fs = require('fs');
 const { generateVanityAddress } = require('./components/vanityAddressUtils');
 const { getDeploymentAccount } = require('./components/componentDeploymentUtils');
 const { deployExchangeFunction } = require('./components/deployExchangeFunction')
-const { deployPump } = require('./components/deployPump')
+const { deployPump } = require('./components/deployPump');
+const { deployImplementation } = require('./components/deployImplementation');
+const { deployAquifer } = require('./components/deployAquifer');
 
 async function main() {
     const asciiArt = ` 
@@ -34,7 +36,7 @@ async function main() {
         },
         {
             type: 'list',
-            choices: ['Exchange Function', 'Pump', 'Well Implementation'],
+            choices: ['Exchange Function', 'Pump', 'Well Implementation', 'Aquifer'],
             message: 'Select the component type you would like to deploy',
             name: 'componentType',
         },
@@ -60,15 +62,15 @@ async function main() {
     // for pump --> multiflow pump with additional parameters based on version
     // for well implementation --> standard well implementation
 
-    let componentName = '';
     if (componentType === 'Exchange Function') {
-        componentName = await deployExchangeFunction(vanity, deploymentAccount, 3);
+        await deployExchangeFunction(vanity, deploymentAccount, 3);
     } else if (componentType === 'Pump') {
-        componentName = await deployPump(vanity, deploymentAccount, 3);
+        await deployPump(vanity, deploymentAccount, 3);
+    } else if (componentType === 'Well Implementation') {
+        await deployImplementation(vanity, deploymentAccount, 3);
+    } else if (componentType === 'Aquifer') {
+        await deployAquifer(vanity, deploymentAccount, 3);
     }
-    // } else if (componentType === 'Well Implementation') {
-    //     componentName = await deployWellImplementation();
-    // }
 }
 
 main().catch((error) => {

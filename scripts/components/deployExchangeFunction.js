@@ -24,6 +24,7 @@ async function deployExchangeFunction(vanity, account, nonce) {
 
     let { exchangeFunction, exchangeFunctionVersion } = await inquirer.prompt(exchangeFunctionQuestions);
 
+    // map the exchange function to the actual json contract name
     let exchangeFunctionMap = {
         'ConstantProduct2': 'ConstantProduct2',
     }

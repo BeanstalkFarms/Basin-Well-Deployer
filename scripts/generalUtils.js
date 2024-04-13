@@ -23,7 +23,12 @@ function getLatestReleaseVersion() {
 
 // Function to find the parameters for a given component version from their respective registry json
 function findParametersByVersionInRegistryJson(version, jsonData ) {
+    // obtain the specified version info of the component
     const versionInfo = jsonData.versions.find(v => v.version === version);
+
+    // dont ask any questions if the version has no parameters
+    if (versionInfo.hasParameters === false) {return []}
+
     if (versionInfo) {
       return versionInfo.parameters;
     } else {

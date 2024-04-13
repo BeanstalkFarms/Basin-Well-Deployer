@@ -5,7 +5,6 @@ const inquirer = require('inquirer');
 // Generates info for a component vanity address and writes it to a file
 async function generateVanityAddress() {
 
-    // ask for pattern
     patternQuestion = {
         type: 'input',
         message: 'Enter the pattern you want vanity address to start with:',

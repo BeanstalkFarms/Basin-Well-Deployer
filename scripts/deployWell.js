@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {encodeInitFunctionCall, encodeWellImmutableData, validateWellInput, getWellComponentQuestionsArray,
-   getWellDataQuestionsArray, printWellDefinition, mapComponentDetails} = require('./wellDeploymentUtils');
+const {encodeInitFunctionCall, encodeWellImmutableData} = require('./wells/wellDeploymentUtils');
+const {getWellComponentQuestionsArray, getWellDataQuestionsArray} = require('./wells/wellDeploymentInput');
 const { askForConfirmation } = require('./generalUtils');
 
 // Sepolia factory address

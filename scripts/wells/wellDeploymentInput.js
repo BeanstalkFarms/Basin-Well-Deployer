@@ -12,108 +12,6 @@ const constantProduct2AddressMainnet = "0xBA510C20FD2c52E4cb0d23CFC3cCD092F9165a
 const multiFlowPumpAddressMainnet = "0xBA510f10E3095B83a0F33aa9ad2544E22570a87C";
 const standardWellImplementationAddressMainnet = "0xBA510e11eEb387fad877812108a3406CA3f43a4B";
 
-// Utils taken from basin.js in the Beanstalk repo 
-
-// encodeWellImmutableData encodes the immutable data for a well
-function encodeWellImmutableData(
-    aquifer,
-    tokens,
-    wellFunction,
-    pumps
-  ) {
-    let packedPumps = '0x';
-    for (let i = 0; i < pumps.length; i++) {
-        packedPumps = hre.ethers.solidityPacked(
-            ['bytes', 'address', 'uint256', 'bytes'],
-            [
-                packedPumps,           // previously packed pumps
-                pumps[i].target,       // pump address
-                pumps[i].length,       // pump data length
-                pumps[i].data          // pump data (bytes)
-            ]
-        )
-    }
-  
-  
-    immutableData = hre.ethers.solidityPacked(
-        [
-            'address',                  // aquifer address
-            'uint256',                  // number of tokens
-            'address',                  // well function address
-            'uint256',                  // well function data length
-            'uint256',                  // number of pumps
-            'address[]',                // tokens array
-            'bytes',                    // well function data (bytes)
-            'bytes'                     // packed pumps (bytes)
-        ], [
-        aquifer,                    // aquifer address
-        tokens.length,              // number of tokens
-        wellFunction.target,        // well function address
-        wellFunction.length,        // well function data length
-        pumps.length,               // number of pumps
-        tokens,                     // tokens array
-        wellFunction.data,          // well function data (bytes)
-        packedPumps                 // packed pumps (bytes)
-    ]
-    );
-    return immutableData
-  }
-  
-// Encodes the init function call for the well implementation
-async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbol) {
-    const wellInterface = new hre.ethers.Interface(wellImplementationAbi)
-                                          // function   name,  symbol     
-    return wellInterface.encodeFunctionData('init', [wellName, wellSymbol]);
-}
-
-// gets the token symbol from the token address
-async function getTokenSymbol(tokenAddress) {
-    const token = await ethers.getContractAt('IERC20Metadata', tokenAddress);
-    return await token.symbol();
-}
-
-// constructs the default well name from the token addresses and the well function name
-async function getWellName(token1Address, token2Address, wellFunctionName) {
-    try {
-        const token1Symbol = await getTokenSymbol(token1Address);
-        const token2Symbol = await getTokenSymbol(token2Address);
-        return token1Symbol + ':' + token2Symbol + ' ' + wellFunctionName + ' Well';
-    } catch (e) {
-        console.log(e);
-        console.log("Error getting well name, Make sure the token addresses are correct and the tokens are deployed.");
-        process.exit(1);
-    }
-}
-
-// constructs the default well symbol from the token addresses and the well function symbol
-async function getWellSymbol(token1Address, token2Address, wellFunctionSymbol) {
-    try {
-        const token1Name = await getTokenSymbol(token1Address);
-        const token2Name = await getTokenSymbol(token2Address);
-        return token1Name + token2Name + wellFunctionSymbol + 'w';
-    } catch (e) {
-        console.log(e);
-        console.log("Error getting well symbol, Make sure the token addresses are correct and the tokens are deployed.");
-        process.exit(1);
-    }
-}
-
-function validateWellInput(token1Address, token2Address) {
-    // check if token1 and token2 are the same
-    if (token1Address === token2Address) {
-      console.log('\nError: token1 and token2 cannot be the same.');
-      process.exit(1);
-    }
-  
-    // check if token1 and token2 are valid addresses
-    // token address length is 42 characters
-    // if the addresses dont exist, the script will fail at the metadata retrieval step
-    if (token1Address.length !== 42 || token2Address.length !== 42) {
-      console.log('\nError: token1 and token2 addresses are invalid.');
-      process.exit(1);
-    }
-}
-
 function getWellComponentQuestionsArray() {
     return [
         {
@@ -178,7 +76,6 @@ async function getWellDataQuestionsArray(token1Address, token2Address, wellFunct
 
 async function printWellDefinition(token1Address, token2Address, wellFunctionAddress, 
     pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network) {
-
     console.log('\n///////////////// WELL DEPLOYMENT PARAMETERS ///////////////////////////');
     console.log('Token1: ', token1Address + ' (' + await getTokenSymbol(token1Address) + ')' );
     console.log('Token2: ', token2Address + ' (' + await getTokenSymbol(token2Address) + ')' );
@@ -245,18 +142,26 @@ function mapComponentDetails(componentType, key, network) {
     };
 }
 
-
-
+function validateWellInput(token1Address, token2Address) {
+    // check if token1 and token2 are the same
+    if (token1Address === token2Address) {
+      console.log('\nError: token1 and token2 cannot be the same.');
+      process.exit(1);
+    }
+  
+    // check if token1 and token2 are valid addresses
+    // token address length is 42 characters
+    // if the addresses dont exist, the script will fail at the metadata retrieval step
+    if (token1Address.length !== 42 || token2Address.length !== 42) {
+      console.log('\nError: token1 and token2 addresses are invalid.');
+      process.exit(1);
+    }
+}
 
 module.exports = {
-    encodeWellImmutableData,
-    encodeInitFunctionCall,
-    getWellName,
-    getWellSymbol,
-    getTokenSymbol,
     validateWellInput,
     getWellComponentQuestionsArray,
     getWellDataQuestionsArray,
     printWellDefinition,
     mapComponentDetails
-}
+};

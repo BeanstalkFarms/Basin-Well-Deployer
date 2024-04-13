@@ -29,7 +29,7 @@ async function deployPump(vanity, account, nonce) {
 
     ///////////////////////// PUMP PARAMETERS /////////////////////////
 
-    const pumpRegistry = fs.readFileSync('./data/pumpRegistry.json');
+    const pumpRegistry = fs.readFileSync('./data/MultiFlowPumpRegistry.json');
     const pumpJson = JSON.parse(pumpRegistry);
 
     const pumpParamsQuestions = findParametersByVersionInRegistryJson(pumpVersion, pumpJson);

@@ -92,7 +92,7 @@ async function printWellDefinition(token1Address, token2Address, wellFunctionAdd
 function getConfigByComponentType(componentType) {
 
     // Central configuration repository
-    // TODO: Move to a json file like the pump registry
+    // TODO: Move everyhting to a json file like the pump registry
     const componentConfigs = {
       wellFunction: {
         'ConstantProduct2': {

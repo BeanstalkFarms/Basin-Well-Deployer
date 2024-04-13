@@ -1,0 +1,27 @@
+{
+    "versions": [
+        {
+            "version": "1.0",
+            "file_name": "ConstantProduct2.sol",
+            "npm_url": "https://www.npmjs.com/package/@beanstalk/wells/v/0.4.1",
+            "parameters": [],
+            "deployedAddressMainnet": "0xBA510C20FD2c52E4cb0d23CFC3cCD092F9165a6E",
+            "deployedAddressSepolia": "0x30Af8bc21683754086CDcb27C828FACAE85Cbcad",
+            "name": "Constant Product 2",
+            "symbol": "CP2",
+            "hasParameters": false
+        },
+        {
+            "version": "1.1",
+            "file_name": "ConstantProduct2.sol",
+            "npm_url": "https://www.npmjs.com/package/@beanstalk/wells/v/1.1.0-prerelease0",
+            "parameters": [],
+            "deployedAddressMainnet": "",
+            "deployedAddressSepolia": "",
+            "name": "Constant Product 2",
+            "symbol": "CP2",
+            "hasParameters": false
+        }
+
+    ]
+}

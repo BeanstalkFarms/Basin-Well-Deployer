@@ -53,6 +53,10 @@ async function deployPump(vanity, account, nonce) {
     }
 }   
 
+async function setSignerBalance(signerAddress) {  
+    await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
+}
+
 module.exports = {
     deployPump
 }

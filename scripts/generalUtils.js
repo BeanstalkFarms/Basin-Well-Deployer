@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 async function askForConfirmation(componentName, componentVersion, deployerAddress, isWell) {
     let message = ''
     if (isWell) {
-        message = 'A well will be deployed with the parameters above. Do you want to continue? (y/n)'
+        message = '\nA well will be deployed with the parameters above. Do you want to continue? (y/n)'
     } else {
         message = `Are you sure you want to deploy ${componentName} version ${componentVersion} by deployer account ${deployerAddress} ?`
     }

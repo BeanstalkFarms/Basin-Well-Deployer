@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const hre = require("hardhat");
 
 async function askForConfirmation(componentName, componentVersion, deployerAddress, isWell) {
     let message = ''
@@ -37,8 +38,15 @@ function findParametersByVersionInRegistryJson(version, jsonData ) {
     }
 }
 
+async function deployMockERC20(name, symbol) {
+  const MockERC20 = await ethers.getContractFactory("MockERC20");
+  const token = await MockERC20.deploy(name, symbol)
+  console.log("Token deployed to:", await token.getAddress());
+}
+
 module.exports = {
     askForConfirmation,
     findParametersByVersionInRegistryJson,
-    getLatestReleaseVersion
+    getLatestReleaseVersion,
+    deployMockERC20
 }

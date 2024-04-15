@@ -1,4 +1,5 @@
 const hre = require("hardhat");
+const {getWellName, getWellSymbol, getTokenSymbol} = require('./wellDeploymentUtils');
 
 // Sepolia addresses
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -72,6 +73,46 @@ async function getWellDataQuestionsArray(token1Address, token2Address, wellFunct
           message: 'Input a salt for the well. Use a salt deploy a new Well with CREATE2 opcode. Press ENTER to add the default salt. Salts are used for vanity addresses and to predict the new well address.',
         },
       ];
+}
+
+async function getWellPumpDataQuestionsArray() {
+  const hexzero = await hre.ethers.zeroPadValue("0x00", 16)
+  const pumpDataQuestions = [
+    {
+      type: 'input',
+      name: 'alpha',
+      message: 'Enter the alpha value for the pump (bytes16)',
+      default: await hre.ethers.zeroPadValue("0x12", 16)
+    },
+    {
+      type: 'input',
+      name: 'capInterval',
+      message: 'Enter the cap interval for the pump (uint256)',
+      default: 12
+    },
+    {
+      type: 'input',
+      name: 'maxRateChanges',
+      message: 'Enter the max rate changes for the pump (bytes16[][])',
+      default: [
+        [hexzero, await hre.ethers.zeroPadValue("0x12", 16)],
+        [await hre.ethers.zeroPadValue("0x12", 16), hexzero]
+      ]
+    },
+    {
+      type: 'input',
+      name: 'maxLpSupplyIncrease',
+      message: 'Enter the max LP supply increase for the pump (bytes16)',
+      default: await hre.ethers.zeroPadValue("0x12", 16)
+    },
+    {
+      type: 'input',
+      name: 'maxLpSupplyDecrease',
+      message: 'Enter the max LP supply decrease for the pump (bytes16)',
+      default: await hre.ethers.zeroPadValue("0x12", 16)
+    }
+  ];
+  return pumpDataQuestions;
 }
 
 async function printWellDefinition(token1Address, token2Address, wellFunctionAddress, 
@@ -163,5 +204,6 @@ module.exports = {
     getWellComponentQuestionsArray,
     getWellDataQuestionsArray,
     printWellDefinition,
-    mapComponentDetails
+    mapComponentDetails,
+    getWellPumpDataQuestionsArray
 };

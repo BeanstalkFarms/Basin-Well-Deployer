@@ -13,7 +13,7 @@ const ALCHEMY_MAINNET_KEY = process.env.ALCHEMY_MAINNET_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.19",
+  solidity: "0.8.20",
   networks: {
     sepolia: {
       url: ALCHEMY_SEPOLIA_KEY,

@@ -2,7 +2,6 @@ const hre = require("hardhat");
 
 // Utils taken from basin.js in the Beanstalk repo 
 
-// encodeWellImmutableData encodes the immutable data for a well
 function encodeWellImmutableData(
     aquifer,
     tokens,
@@ -55,37 +54,31 @@ async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbo
 }
 
 
-// struct CapReservesParameters {
-//     bytes16[][] maxRateChanges;
-//     bytes16 maxLpSupplyIncrease;
-//     bytes16 maxLpSupplyDecrease;
-// }
+async function encodePumpData(alpha, capInterval, capReservesParameters) {
 
-async function encodePumpData(
-    // bytes16 alpha, --> see stack overflow patrick question for bytes
-    // uint256 capInterval, --> regular number
-    // MultiFlowPump.CapReservesParameters memory crp --> struct --> Should be an object 
-    alpha,
-    capInterval,
-    crp
-) {
-    // encode alpha to bytes
-    const encoder = hre.ethers.AbiCoder();
-    const alphaBytes = encoder.encode(['bytes16'], [alpha]);
+    // pack all together with solidityPack
+    const pumpData = hre.ethers.solidityPacked(
+        ['bytes16',
+         'uint256',
+         'bytes16[][]',
+         'bytes16',
+         'bytes16'],
+        [
+         alpha,
+         capInterval,
+         capReservesParameters.maxRateChanges,
+         capReservesParameters.maxLpSupplyIncrease,
+         capReservesParameters.maxLpSupplyDecrease
+        ]
+    );
 
-    // convert capInterval to uint256 bytes
-    const capIntervalBytes = encoder.encode(['uint256'], [capInterval]);
-
-    // convert crp to bytes                                                 2D array, bytes16 encoded, bytes16 encoded
-    const crpBytes = encoder.encode(['bytes16[][]', 'bytes16', 'bytes16'], [crp.maxRateChanges, crp.maxLpSupplyIncrease, crp.maxLpSupplyDecrease]);
-
-    // return the concatenated bytes
-    return hre.ethers.concat([alphaBytes, capIntervalBytes, crpBytes]);
+    console.log("Packed: ", pumpData);
+    return pumpData;
 }
 
 // gets the token symbol from the token address
 async function getTokenSymbol(tokenAddress) {
-    const token = await ethers.getContractAt('IERC20Metadata', tokenAddress);
+    const token = await ethers.getContractAt('contracts/IERC20Metadata.sol:IERC20Metadata', tokenAddress);
     return await token.symbol();
 }
 
@@ -118,6 +111,7 @@ async function getWellSymbol(token1Address, token2Address, wellFunctionSymbol) {
 module.exports = {
     encodeWellImmutableData,
     encodeInitFunctionCall,
+    encodePumpData,
     getWellName,
     getWellSymbol,
     getTokenSymbol

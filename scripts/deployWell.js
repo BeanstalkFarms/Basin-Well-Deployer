@@ -1,9 +1,9 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {encodeInitFunctionCall, encodeWellImmutableData} = require('./wells/wellDeploymentUtils');
-const {getWellComponentQuestionsArray, getWellDataQuestionsArray} = require('./wells/wellDeploymentInput');
-const { askForConfirmation } = require('./generalUtils');
+const {encodeInitFunctionCall, encodeWellImmutableData, encodePumpData, getTokenSymbol, getWellName} = require('./wells/wellDeploymentUtils');
+const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray} = require('./wells/wellDeploymentInput');
+const { askForConfirmation, deployMockERC20 } = require('./generalUtils');
 
 // Sepolia factory address
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -52,6 +52,24 @@ async function deployWell() {
   const dataQuestions = await getWellDataQuestionsArray(token1Address, token2Address, wellFunctionName, wellFunctionSymbol);
   let { wellName, wellSymbol, salt } = await inquirer.prompt(dataQuestions);
 
+  ///////////////////////////// PUMP DATA /////////////////////////////
+  const pumpDataQuestions = await getWellPumpDataQuestionsArray();
+  const { alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease } = await inquirer.prompt(pumpDataQuestions);
+  
+  // construct the capReservesParameters struct
+  // struct CapReservesParameters {
+  //     bytes16[][] maxRateChanges;
+  //     bytes16 maxLpSupplyIncrease;
+  //     bytes16 maxLpSupplyDecrease;
+  // }
+  const capReservesParameters = {
+    maxRateChanges: maxRateChanges,
+    maxLpSupplyIncrease: maxLpSupplyIncrease,
+    maxLpSupplyDecrease: maxLpSupplyDecrease
+  };
+
+  const pumpData = await encodePumpData(alpha, capInterval, capReservesParameters);
+
   // salt validation
   // salt is a bytes32 string
   if ( salt === '' ) {
@@ -65,10 +83,8 @@ async function deployWell() {
   // Confirmation step
   await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
-  askForConfirmation(undefined, undefined, undefined, undefined, true)
+  await askForConfirmation(undefined, undefined, undefined, undefined, true)
   
-  /////////////////////////////// END INPUT ///////////////////////////////
-
   // Get deployed aquifier
   const deployedAquifierAddress = network === 'Mainnet' ? aquifierAddressMainnet : aquifierAddressSepolia;
 
@@ -89,7 +105,7 @@ async function deployWell() {
     deployedAquifierAddress, // aquifer address
     tokens, // tokens array
     { target: wellFunctionAddress, data: '0x', length: 0 }, // well function object --> reference to Call struct
-    [{ target: pumpAddress, data: '0x', length: 0 }] // array of pump objects --> references to Call struct
+    [{ target: pumpAddress, data: pumpData, length: 1 }] // array of pump objects --> references to Call struct
   )
   
   // Well implementation abi from etherscan
@@ -112,7 +128,7 @@ async function deployWell() {
   // DEPLOY WELL FUNCTION CALL
   console.log('Deploying new well...');
 
-  // Then we call boreWell again, to actually deploy the well
+  // Then we call boreWell, to actually deploy the well
   await deployedAquifier.boreWell(
     wellImplementationAddress,
     immutableData,

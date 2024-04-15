@@ -81,12 +81,15 @@ async function deployWell() {
   // Assemble data to encode
   const tokens = [token1Address, token2Address];
 
+  // see here for encoding with bytes16 , bytes32 and bytes64 
+  // https://ethereum.stackexchange.com/questions/113906/convert-number-to-bytes-in-ethersjs
+
   // IMMUTABLE DATA
   const immutableData = await encodeWellImmutableData(
     deployedAquifierAddress, // aquifer address
     tokens, // tokens array
-    { target: wellFunctionAddress, data: '0x', length: 0 }, // well function
-    [{ target: pumpAddress, data: '0x', length: 0 }] // pumps
+    { target: wellFunctionAddress, data: '0x', length: 0 }, // well function object --> reference to Call struct
+    [{ target: pumpAddress, data: '0x', length: 0 }] // array of pump objects --> references to Call struct
   )
   
   // Well implementation abi from etherscan

@@ -53,16 +53,15 @@ async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbo
     return wellInterface.encodeFunctionData('init', [wellName, wellSymbol]);
 }
 
-
 async function encodePumpData(alpha, capInterval, capReservesParameters) {
 
     // pack all together with solidityPack
     const pumpData = hre.ethers.solidityPacked(
-        ['bytes16',
-         'uint256',
-         'bytes16[][]',
-         'bytes16',
-         'bytes16'],
+        ['bytes16', // alpha
+         'uint256', // capInterval
+         'bytes16[][]', // maxRateChanges
+         'bytes16', // maxLpSupplyIncrease 
+         'bytes16'], // maxLpSupplyDecrease
         [
          alpha,
          capInterval,
@@ -72,7 +71,6 @@ async function encodePumpData(alpha, capInterval, capReservesParameters) {
         ]
     );
 
-    console.log("Packed: ", pumpData);
     return pumpData;
 }
 

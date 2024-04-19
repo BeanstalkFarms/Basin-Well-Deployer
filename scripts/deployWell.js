@@ -97,9 +97,6 @@ async function deployWell() {
   // Assemble data to encode
   const tokens = [token1Address, token2Address];
 
-  // see here for encoding with bytes16 , bytes32 and bytes64 
-  // https://ethereum.stackexchange.com/questions/113906/convert-number-to-bytes-in-ethersjs
-
   // IMMUTABLE DATA
   const immutableData = await encodeWellImmutableData(
     deployedAquifierAddress, // aquifer address

@@ -1,26 +1,6 @@
 const hre = require("hardhat");
 
-async function encodePumpData(alpha, capInterval, capReservesParameters) {
-    console.log("Alpha: ", alpha);
-    console.log("CapInterval: ", capInterval);
-
-    // pack all together with solidityPack
-    const packed = hre.ethers.solidityPacked(
-        ['bytes16', 'uint256', 'bytes16[][]', 'bytes16', 'bytes16'],
-        [alpha, capInterval, crp.maxRateChanges, crp.maxLpSupplyIncrease, crp.maxLpSupplyDecrease]
-    );
-
-    console.log("Packed: ", packed);
-    return packed;
-}
-
-async function main() {
-
-    // struct CapReservesParameters {
-    //     bytes16[][] maxRateChanges;
-    //     bytes16 maxLpSupplyIncrease;
-    //     bytes16 maxLpSupplyDecrease;
-    // }
+async function encodePumpData() {
 
     const alpha = await hre.ethers.zeroPadValue("0x12", 16)
 
@@ -43,12 +23,26 @@ async function main() {
         maxLpSupplyDecrease: maxLpSupplyDecrease
     };
 
-    await encodePumpData(alpha, capInterval, capReservesParameters);
+    const abiCoder = new hre.ethers.AbiCoder();
+
+    // Encoding complex structs (using positional properties)
+    const all_packed = abiCoder.encode(
+    // alpha, capInterval, capReservesParameters(maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease)
+    ['bytes16', 'uint256',"tuple(bytes16[][], bytes16, bytes16)"],
+    [
+        alpha,
+        capInterval,
+      [ capReservesParameters.maxRateChanges, capReservesParameters.maxLpSupplyIncrease, capReservesParameters.maxLpSupplyDecrease]
+    ]
+    );
+
+    console.log("all_packed: ", all_packed);
 }
 
-main()
+
+encodePumpData()
     .then(() => process.exit(0))
     .catch(error => {
         console.error(error);
         process.exit(1);
-    });
+});

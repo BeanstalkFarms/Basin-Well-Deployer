@@ -54,24 +54,19 @@ async function encodeInitFunctionCall(wellImplementationAbi, wellName, wellSymbo
 }
 
 async function encodePumpData(alpha, capInterval, capReservesParameters) {
-
-    // pack all together with solidityPack
-    const pumpData = hre.ethers.solidityPacked(
-        ['bytes16', // alpha
-         'uint256', // capInterval
-         'bytes16[][]', // maxRateChanges
-         'bytes16', // maxLpSupplyIncrease 
-         'bytes16'], // maxLpSupplyDecrease
-        [
-         alpha,
-         capInterval,
-         capReservesParameters.maxRateChanges,
-         capReservesParameters.maxLpSupplyIncrease,
-         capReservesParameters.maxLpSupplyDecrease
-        ]
+    const abiCoder = new hre.ethers.AbiCoder();
+    // Encoding complex structs (using positional properties)
+    let abiCoderEncoding = abiCoder.encode(
+    // alpha, capInterval, capReservesParameters(maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease)
+    ['bytes16', 'uint256',"tuple(bytes16[][], bytes16, bytes16)"],
+    [
+        alpha,
+        capInterval,
+      [ capReservesParameters.maxRateChanges,
+        capReservesParameters.maxLpSupplyIncrease,
+        capReservesParameters.maxLpSupplyDecrease ]
+    ]
     );
-
-    return pumpData;
 }
 
 // gets the token symbol from the token address

@@ -63,9 +63,9 @@ async function deployWell() {
   //     bytes16 maxLpSupplyDecrease;
   // }
   const capReservesParameters = {
-    maxRateChanges: maxRateChanges,
-    maxLpSupplyIncrease: maxLpSupplyIncrease,
-    maxLpSupplyDecrease: maxLpSupplyDecrease
+    maxRateChanges: maxRateChanges, // bytes16[][]
+    maxLpSupplyIncrease: maxLpSupplyIncrease, // bytes16
+    maxLpSupplyDecrease: maxLpSupplyDecrease // bytes16
   };
 
   const pumpData = await encodePumpData(alpha, capInterval, capReservesParameters);

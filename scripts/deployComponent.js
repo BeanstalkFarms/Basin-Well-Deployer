@@ -58,13 +58,13 @@ async function main() {
     /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
     if (componentType === 'Exchange Function') {
-        await deployExchangeFunction(vanity, deploymentAccount, 3);
+        await deployExchangeFunction(vanity, deploymentAccount, 1);
     } else if (componentType === 'Pump') {
-        await deployPump(vanity, deploymentAccount, 3);
+        await deployPump(vanity, deploymentAccount, 1);
     } else if (componentType === 'Well Implementation') {
-        await deployImplementation(vanity, deploymentAccount, 3);
+        await deployImplementation(vanity, deploymentAccount, 1);
     } else if (componentType === 'Aquifer') {
-        await deployAquifer(vanity, deploymentAccount, 3);
+        await deployAquifer(vanity, deploymentAccount, 1);
     }
 }
 

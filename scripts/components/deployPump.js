@@ -11,7 +11,7 @@ async function deployPump(vanity, account, nonce) {
       {
           type: 'list',
           choices: ['Multiflow Pump'],
-          message: 'Select the exchange function you would like to deploy',
+          message: 'Select the Pump you would like to deploy',
           name: 'pump',
       }
     ]

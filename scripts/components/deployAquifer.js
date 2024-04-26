@@ -23,9 +23,7 @@ async function deployAquifer(vanity, account, nonce) {
   const aquiferVersion = getLatestReleaseVersion();
 
   // map the input to the actual exchange function name json from npm package
-  const componentName = aquiferMap[aquifer];  
-
-  await setSignerBalance(account.address) 
+  const componentName = aquiferMap[aquifer];
 
   await askForConfirmation(componentName, aquiferVersion, account.address, false) 
 
@@ -34,10 +32,6 @@ async function deployAquifer(vanity, account, nonce) {
   } else {
       await deployWellContract(componentName, [], account, aquiferVersion);
   }
-}
-
-async function setSignerBalance(signerAddress) {  
-  await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
 }
 
 module.exports = {

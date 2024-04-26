@@ -25,8 +25,6 @@ async function deployImplementation(vanity, account, nonce) {
       // map the input to the actual exchange function name json from npm package
       const componentName = implementationMap[implementation];
   
-      await setSignerBalance(account.address)
-  
       await askForConfirmation(componentName, implementationVersion, account.address, false)
 
       if (vanity) {

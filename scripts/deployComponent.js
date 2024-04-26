@@ -8,7 +8,7 @@ const { deployPump } = require('./components/deployPump');
 const { deployImplementation } = require('./components/deployImplementation');
 const { deployAquifer } = require('./components/deployAquifer');
 
-async function main() {
+async function deployComponent(mock) {
     const asciiArt = ` 
   
 ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗    ██████╗ ███████╗██████╗ ██╗      ██████╗ ██╗   ██╗    
@@ -55,6 +55,8 @@ async function main() {
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
     const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
 
+    if (mock) {await setSignerBalance(deploymentAccount.address); }
+
     /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
     if (componentType === 'Exchange Function') {
@@ -68,7 +70,12 @@ async function main() {
     }
 }
 
-main().catch((error) => {
+
+async function setSignerBalance(signerAddress) {  
+    await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
+  }
+
+deployComponent(false).catch((error) => {
     console.error(error);
     process.exitCode = 1;
   });

@@ -105,6 +105,9 @@ async function deployWell() {
     [{ target: pumpAddress, data: pumpData, length: 1 }] // array of pump objects --> references to Call struct
   )
   
+  console.log('\nImmutable data encoded...\n')
+  console.log(immutableData)
+
   // Well implementation abi from etherscan
   const wellImplementationABI = JSON.parse(await fs.readFileSync('contracts/Well_ABI.json', 'utf8'));
   
@@ -112,7 +115,8 @@ async function deployWell() {
                                                               // abi   name,  symbol
   const initData = await encodeInitFunctionCall(wellImplementationABI, wellName, wellSymbol);
   
-  console.log('\nData encoded...');
+  console.log('\nInit data encoded...\n')
+  console.log(initData)
 
   // Predict well address from input parameters
   const newWellAddress = await deployedAquifier.predictWellAddress(

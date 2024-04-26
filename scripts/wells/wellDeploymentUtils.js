@@ -67,6 +67,7 @@ async function encodePumpData(alpha, capInterval, capReservesParameters) {
         capReservesParameters.maxLpSupplyDecrease ]
     ]
     );
+    return abiCoderEncoding;
 }
 
 // gets the token symbol from the token address

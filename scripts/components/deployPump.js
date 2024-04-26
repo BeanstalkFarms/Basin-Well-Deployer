@@ -42,8 +42,6 @@ async function deployPump(vanity, account, nonce) {
         pumpParamsArray.push(pumpParameters[key]);
     }
 
-    await setSignerBalance(account.address)
-
     await askForConfirmation(componentName, pumpVersion, account.address, false)
 
     if (vanity) {
@@ -52,10 +50,6 @@ async function deployPump(vanity, account, nonce) {
         await deployWellContract(componentName, pumpParamsArray, account, pumpVersion);
     }
 }   
-
-async function setSignerBalance(signerAddress) {  
-    await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
-}
 
 module.exports = {
     deployPump

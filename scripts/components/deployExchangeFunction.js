@@ -27,8 +27,6 @@ async function deployExchangeFunction(vanity, account, nonce) {
     // map the input to the actual exchange function name json from npm package
     const componentName = exchangeFunctionMap[exchangeFunction];
 
-    await setSignerBalance(account.address)
-
     await askForConfirmation(componentName, exchangeFunctionVersion, account.address, false)
 
     if (vanity) {
@@ -37,10 +35,6 @@ async function deployExchangeFunction(vanity, account, nonce) {
         await deployWellContract(componentName, [], account, exchangeFunctionVersion);
     }   
 
-}
-
-async function setSignerBalance(signerAddress) {  
-      await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
 }
 
 module.exports = {

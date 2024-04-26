@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-async function mineSalt() {
+async function testPumpDataEncoding() {
 
     const alpha = await hre.ethers.zeroPadValue("0x12", 16)
     const ratetoken1 = await hre.ethers.zeroPadValue("0x12", 16)
@@ -60,7 +60,8 @@ async function mineSalt() {
 
     // check if either encoding is correct
     // Correct encoding:  ABI CODER
-    console.log("Correct encoding: ", correctEncoding === abiCoderEncoding || correctEncoding === solidityPackedEncoding);
+    console.log("ABI CODER IS CORRECT: ", correctEncoding === abiCoderEncoding);
+    console.log("SOLIDITY PACKED IS CORRECT: ", correctEncoding === solidityPackedEncoding);
 }
 
-mineSalt();
+testPumpDataEncoding();

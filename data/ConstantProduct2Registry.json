@@ -17,7 +17,7 @@
             "npm_url": "https://www.npmjs.com/package/@beanstalk/wells/v/1.1.0-prerelease0",
             "parameters": [],
             "deployedAddressMainnet": "",
-            "deployedAddressSepolia": "",
+            "deployedAddressSepolia": "0x12c8E0AaC2B00af8734a23A24De3DD58D331b14e",
             "name": "Constant Product 2",
             "symbol": "CP2",
             "hasParameters": false

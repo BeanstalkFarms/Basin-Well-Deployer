@@ -44,10 +44,20 @@ Follow these steps and open a terminal (cmd on windows) to get started with this
 
 - To get an Alchemy RPC URL, sign up for an account at [Alchemy](https://www.alchemy.com/) and create a new project. Select the Ethereum network you want to deploy to and copy the https URL.
 
-4. **Run the CLI script:**
+## Deploying a Well
+- To deploy a well with existing deployed components, run the following command:
    ```sh
    npx hardhat run scripts/deployWell.js --network <network>
    ```
 - Replace ```<network>``` with the network you want to deploy to. Options are ```mainnet``` and ```sepolia```.
 
 - The script will then guide you through the process of deploying a new well. 
+
+## Deploying a Component
+- To deploy a new component, run the following command:
+   ```sh
+   npx hardhat run scripts/deployComponent.js --network <network>
+   ```
+- Replace ```<network>``` with the network you want to deploy to. Options are ```mainnet``` and ```sepolia```.
+
+- To integrate your new component into the well, you will need to grab the address of the deployed component and add it as input to the deployWell script.

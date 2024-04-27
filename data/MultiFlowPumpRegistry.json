@@ -40,7 +40,7 @@
         "npm_url": "https://www.npmjs.com/package/@beanstalk/wells/v/1.1.0-prerelease0",
         "parameters": [],
         "deployedAddressMainnet": "",
-        "deployedAddressSepolia": "",
+        "deployedAddressSepolia": "0xa5768AF9aA628CCd2b97070E54071b064f252724",
         "hasParameters": false
       }
     ]

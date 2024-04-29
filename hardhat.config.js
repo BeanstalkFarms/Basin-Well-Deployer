@@ -10,6 +10,7 @@ require('dotenv').config()
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ALCHEMY_SEPOLIA_KEY = process.env.ALCHEMY_SEPOLIA_KEY;
 const ALCHEMY_MAINNET_KEY = process.env.ALCHEMY_MAINNET_KEY;
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -23,6 +24,9 @@ module.exports = {
       url: ALCHEMY_MAINNET_KEY,
       accounts: [PRIVATE_KEY]
     }
+  },
+  etherscan: {
+    apiKey: ETHERSCAN_API_KEY,
   },
 
   

@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
 const {encodeInitFunctionCall, encodeWellImmutableData, encodePumpData, getTokenSymbol, getWellName} = require('./wells/wellDeploymentUtils');
-const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray} = require('./wells/wellDeploymentInput');
+const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray, askExitWithInitData} = require('./wells/wellDeploymentInput');
 const { askForConfirmation, deployMockERC20 } = require('./generalUtils');
 
 // Sepolia factory address
@@ -80,11 +80,6 @@ async function deployWell() {
     salt = hre.ethers.encodeBytes32String(salt);
   }
   
-  // Confirmation step
-  await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
-     pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
-  await askForConfirmation(undefined, undefined, undefined, undefined, true)
-  
   // Get deployed aquifier
   const deployedAquifierAddress = network === 'Mainnet' ? aquifierAddressMainnet : aquifierAddressSepolia;
 
@@ -117,6 +112,13 @@ async function deployWell() {
   
   console.log('\nInit data encoded...\n')
   console.log(initData)
+
+  await askExitWithInitData(initData);
+
+  // Confirmation step
+  await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
+      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
+  await askForConfirmation(undefined, undefined, undefined, true)
 
   // Predict well address from input parameters
   const newWellAddress = await deployedAquifier.predictWellAddress(

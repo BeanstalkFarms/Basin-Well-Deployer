@@ -1,5 +1,7 @@
 const hre = require("hardhat");
 const {getWellName, getWellSymbol, getTokenSymbol} = require('./wellDeploymentUtils');
+const inquirer = require('inquirer');
+const fs = require('fs');
 
 // Sepolia addresses
 const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
@@ -199,11 +201,23 @@ function validateWellInput(token1Address, token2Address) {
     }
 }
 
+async function askExitWithInitData(initData) {
+  const message = "\nNow that init data has been encoded, you can mine for a salt for a vanity well address or proceed with the deployment of the well. Would you like to proceed with the deployment? (y/n)"
+  const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: message , default: "y"});
+  if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
+    await fs.writeFileSync('wellInitData.txt', initData);
+    console.log('\nInit data have been saved to wellInitData.txt. Use them to mine for a salt and come back to deploy the well.')
+    console.log('Exiting...');
+    process.exit(0);
+  }
+}
+
 module.exports = {
     validateWellInput,
     getWellComponentQuestionsArray,
     getWellDataQuestionsArray,
     printWellDefinition,
     mapComponentDetails,
-    getWellPumpDataQuestionsArray
+    getWellPumpDataQuestionsArray,
+    askExitWithInitData
 };

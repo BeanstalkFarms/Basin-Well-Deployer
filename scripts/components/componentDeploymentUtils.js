@@ -10,11 +10,14 @@ const BASE_STRING = './node_modules/@beanstalk/wells';
 async function getWellContractFactory(name, account, version) {
     const FINAL_BASE_STRING = BASE_STRING + (version !== "1.0" ? version : '') + '/out';
     const contractJson = JSON.parse(await fs.readFileSync(`${FINAL_BASE_STRING}/${name}.sol/${name}.json`))
-    return await hre.ethers.getContractFactory(
+    let contractFactory = await hre.ethers.getContractFactory(
         contractJson.abi,
         contractJson.bytecode.object,
         account
     );
+    return contractFactory;
+    // console.log(await contractFactory.bytecode)
+    // return contractFactory.bytecode
 }
 
 // Deploys the well contract at a specific nonce

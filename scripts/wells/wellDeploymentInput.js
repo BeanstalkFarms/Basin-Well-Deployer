@@ -77,6 +77,27 @@ async function getWellDataQuestionsArray(token1Address, token2Address, wellFunct
       ];
 }
 
+
+async function padToBytes16(value) {
+  // convert to hex with 0x prefix
+  const hexValue = '0x' + value.toString();
+  return await hre.ethers.zeroPadValue(hexValue, 16);
+}
+
+
+async function padPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease) {
+  alpha = await padToBytes16(alpha);
+  capInterval = await padToBytes16(capInterval);
+  for (let i = 0; i < maxRateChanges.length; i++) {
+    for (let j = 0; j < maxRateChanges[i].length; j++) {
+      maxRateChanges[i][j] = await padToBytes16(maxRateChanges[i][j]);
+    }
+  }
+  maxLpSupplyIncrease = await padToBytes16(maxLpSupplyIncrease);
+  maxLpSupplyDecrease = await padToBytes16(maxLpSupplyDecrease);
+  return [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease];
+}
+
 async function getWellPumpDataQuestionsArray() {
   const hexzero = await hre.ethers.zeroPadValue("0x00", 16)
   const pumpDataQuestions = [
@@ -84,12 +105,12 @@ async function getWellPumpDataQuestionsArray() {
       type: 'input',
       name: 'alpha',
       message: 'Enter the alpha value for the pump (bytes16)',
-      default: await hre.ethers.zeroPadValue("0x12", 16)
+      default: 12
     },
     {
       type: 'input',
       name: 'capInterval',
-      message: 'Enter the cap interval for the pump (uint256)',
+      message: 'Enter the cap interval for the pump in seconds (uint256)',
       default: 12
     },
     {
@@ -97,21 +118,21 @@ async function getWellPumpDataQuestionsArray() {
       name: 'maxRateChanges',
       message: 'Enter the max rate changes for the pump (bytes16[][])',
       default: [
-        [hexzero, await hre.ethers.zeroPadValue("0x12", 16)],
-        [await hre.ethers.zeroPadValue("0x12", 16), hexzero]
+        ["00", 12],
+        [12, "00"]
       ]
     },
     {
       type: 'input',
       name: 'maxLpSupplyIncrease',
       message: 'Enter the max LP supply increase for the pump (bytes16)',
-      default: await hre.ethers.zeroPadValue("0x12", 16)
+      default: 16
     },
     {
       type: 'input',
       name: 'maxLpSupplyDecrease',
       message: 'Enter the max LP supply decrease for the pump (bytes16)',
-      default: await hre.ethers.zeroPadValue("0x12", 16)
+      default: 16
     }
   ];
   return pumpDataQuestions;
@@ -146,7 +167,7 @@ function getConfigByComponentType(componentType) {
       },
       pump: {
         'None': {
-          address: () => ethers.constants.AddressZero
+          address: () => hre.ethers.ZeroAddress,
         },
         'Multi Flow Pump (recommended)': {
           address: (network) => network === 'Mainnet' ? multiFlowPumpAddressMainnet : multiFlowPumpAddressSepolia,
@@ -219,5 +240,6 @@ module.exports = {
     printWellDefinition,
     mapComponentDetails,
     getWellPumpDataQuestionsArray,
+    padPumpData,
     askExitWithInitData
 };

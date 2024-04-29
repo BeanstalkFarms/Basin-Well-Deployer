@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
 const {encodeInitFunctionCall, encodeWellImmutableData, encodePumpData, getTokenSymbol, getWellName} = require('./wells/wellDeploymentUtils');
-const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray, askExitWithInitData} = require('./wells/wellDeploymentInput');
+const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray, askExitWithInitData, padPumpData} = require('./wells/wellDeploymentInput');
 const { askForConfirmation, deployMockERC20 } = require('./generalUtils');
 
 // Sepolia factory address
@@ -54,8 +54,9 @@ async function deployWell() {
 
   ///////////////////////////// PUMP DATA /////////////////////////////
   const pumpDataQuestions = await getWellPumpDataQuestionsArray();
-  const { alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease } = await inquirer.prompt(pumpDataQuestions);
-  
+  let { alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease } = await inquirer.prompt(pumpDataQuestions);
+  [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease] = await padPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease);
+
   // construct the capReservesParameters struct
   // struct CapReservesParameters {
   //     bytes16[][] maxRateChanges;

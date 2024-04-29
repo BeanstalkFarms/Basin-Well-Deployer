@@ -1,6 +1,7 @@
 const fs = require('fs');
 var exec = require('child_process').exec;
 const inquirer = require('inquirer');
+const hre = require('hardhat');
 
 // Generates info for a component vanity address and writes it to a file
 async function generateVanityAddress() {
@@ -56,9 +57,32 @@ async function increaseNonce(account, n) {
     }
 }
 
+async function fundDeploymentAccount(account, mock) {
+    if (mock) {
+        setSignerBalance(account.address)
+    } else {
+        const message = 'You will send 0.01 ETH from your account to the vanity address to fund the deployment account. You can recover the funds later by getting the vanity account private key from /data/vanityAddress.json  Do you want to proceed? (y/n)'
+        const { proceed } = await inquirer.prompt({ type: 'input', name: 'proceed', message: message, default: "y" });
+        if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
+            console.log('Exiting...');
+            process.exit(0);
+        }
+        const signer = await hre.ethers.provider.getSigner();
+        await signer.sendTransaction({
+            to: account.address,
+            value: hre.ethers.parseEther("0.01"),
+        });
+    }
+}
+
+async function setSignerBalance(signerAddress) {  
+  await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
+}
+
 module.exports = {
     generateVanityAddress,
     deployAtNonce,
     increaseToNonce,
-    increaseNonce
+    increaseNonce,
+    fundDeploymentAccount,
 }

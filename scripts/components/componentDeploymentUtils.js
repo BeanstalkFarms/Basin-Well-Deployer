@@ -16,8 +16,6 @@ async function getWellContractFactory(name, account, version) {
         account
     );
     return contractFactory;
-    // console.log(await contractFactory.bytecode)
-    // return contractFactory.bytecode
 }
 
 // Deploys the well contract at a specific nonce

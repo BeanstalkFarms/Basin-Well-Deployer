@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { generateVanityAddress } = require('./components/vanityAddressUtils');
+const { generateVanityAddress, fundDeploymentAccount } = require('./components/vanityAddressUtils');
 const { getDeploymentAccount } = require('./components/componentDeploymentUtils');
 const { deployExchangeFunction } = require('./components/deployExchangeFunction')
 const { deployPump } = require('./components/deployPump');
@@ -55,7 +55,7 @@ async function deployComponent(mock) {
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
     const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
 
-    if (mock) {await setSignerBalance(deploymentAccount.address); }
+    if (vanity) {await fundDeploymentAccount(deploymentAccount, mock);}
 
     /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
@@ -69,11 +69,6 @@ async function deployComponent(mock) {
         await deployAquifer(vanity, deploymentAccount, 1);
     }
 }
-
-
-async function setSignerBalance(signerAddress) {  
-    await hre.network.provider.send("hardhat_setBalance", [signerAddress, "0x21E19E0C9BAB2400000"]);
-  }
 
 deployComponent(false).catch((error) => {
     console.error(error);

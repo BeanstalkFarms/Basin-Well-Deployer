@@ -79,6 +79,8 @@ async function getWellDataQuestionsArray(token1Address, token2Address, wellFunct
 
 
 async function padToBytes16(value) {
+  // if value is less than 10, pad with 0
+  if (value < 10 && value > 0) { value = '0' + value; }
   // convert to hex with 0x prefix
   const hexValue = '0x' + value.toString();
   return await hre.ethers.zeroPadValue(hexValue, 16);
@@ -118,8 +120,8 @@ async function getWellPumpDataQuestionsArray() {
       name: 'maxRateChanges',
       message: 'Enter the max rate changes for the pump (bytes16[][])',
       default: [
-        ["00", 12],
-        [12, "00"]
+        ["00", "12"],
+        ["12", "00"]
       ]
     },
     {

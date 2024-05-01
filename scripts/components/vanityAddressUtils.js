@@ -61,7 +61,7 @@ async function fundDeploymentAccount(account, mock) {
     if (mock) {
         setSignerBalance(account.address)
     } else {
-        const message = 'You will send 0.01 ETH from your account to the vanity address to fund the deployment account. You can recover the funds later by getting the vanity account private key from /data/vanityAddress.json  Do you want to proceed? (y/n)'
+        const message = 'You will send 0.1 ETH from your account to the vanity address to fund the deployment account. You can recover the funds later by getting the vanity account private key from /data/vanityAddress.json  Do you want to proceed? (y/n)'
         const { proceed } = await inquirer.prompt({ type: 'input', name: 'proceed', message: message, default: "y" });
         if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
             console.log('Exiting...');
@@ -70,7 +70,7 @@ async function fundDeploymentAccount(account, mock) {
         const signer = await hre.ethers.provider.getSigner();
         await signer.sendTransaction({
             to: account.address,
-            value: hre.ethers.parseEther("0.01"),
+            value: hre.ethers.parseEther("0.1"),
         });
     }
 }

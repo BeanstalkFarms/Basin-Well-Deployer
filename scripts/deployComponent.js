@@ -55,22 +55,24 @@ async function deployComponent(mock) {
     // if vanity, get the deployment account from the vanity address, else get the signer from the hardhat config
     const deploymentAccount = (vanity) ? await getDeploymentAccount() : await hre.ethers.provider.getSigner();
 
+    const nonce = await hre.ethers.provider.getTransactionCount(deploymentAccount.address);
+
     if (vanity) {await fundDeploymentAccount(deploymentAccount, mock);}
 
     /////////////////////////////// COMPONENT HANDLING ///////////////////////////////
 
     if (componentType === 'Exchange Function') {
-        await deployExchangeFunction(vanity, deploymentAccount, 1);
+        await deployExchangeFunction(vanity, deploymentAccount, nonce);
     } else if (componentType === 'Pump') {
-        await deployPump(vanity, deploymentAccount, 1);
+        await deployPump(vanity, deploymentAccount, nonce);
     } else if (componentType === 'Well Implementation') {
-        await deployImplementation(vanity, deploymentAccount, 1);
+        await deployImplementation(vanity, deploymentAccount, nonce);
     } else if (componentType === 'Aquifer') {
-        await deployAquifer(vanity, deploymentAccount, 1);
+        await deployAquifer(vanity, deploymentAccount, nonce);
     }
 }
 
-deployComponent(false).catch((error) => {
+deployComponent(true).catch((error) => {
     console.error(error);
     process.exitCode = 1;
   });

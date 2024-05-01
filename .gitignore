@@ -11,6 +11,8 @@ data/vanityAddress.json
 
 wellInitData.txt
 
+well.txt
+
 .DS_Store
 
 # Below is Github's node gitignore template,

@@ -3,10 +3,9 @@ const fs = require("fs");
 
 async function mineSalt() {
     const saltCheckerFactory = await hre.ethers.getContractFactory("Salt");
-    const attemptsPerRun = 100;
+    const attemptsPerRun = 1_000;
     const saltChecker = await saltCheckerFactory.deploy(attemptsPerRun);
-    for (let i = 0; i < 10; i++) {
-        console.time(`Iteration ${i}`);
+    for (let i = 0; i < 10_000; i++) {
         console.log(`Iteration: ${i * attemptsPerRun} through ${(i+1) * attemptsPerRun}`);
         const start = i * attemptsPerRun
         const result = await saltChecker.checkForAddress(start, { gasLimit: 5000000000 });

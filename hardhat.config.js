@@ -23,11 +23,15 @@ module.exports = {
     mainnet: {
       url: ALCHEMY_MAINNET_KEY,
       accounts: [PRIVATE_KEY]
+    },
+    localhost: {
+      chainId: 1337
     }
   },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY,
   },
+  
 
   
 };

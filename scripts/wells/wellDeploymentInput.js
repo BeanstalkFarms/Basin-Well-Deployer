@@ -11,8 +11,8 @@ const standardWellImplementationAddressSepolia = "0x29F2f6EBA43ecE36a355D786FbF7
 
 // Mainnet addresses
 const aquifierAddressMainnet = "0xBA51AAAA95aeEFc1292515b36D86C51dC7877773";
-const constantProduct2AddressMainnet = "0xBA510C20FD2c52E4cb0d23CFC3cCD092F9165a6E";
-const multiFlowPumpAddressMainnet = "0xBA510f10E3095B83a0F33aa9ad2544E22570a87C";
+const constantProduct2AddressMainnet = "0xBA150C2ae0f8450D4B832beeFa3338d4b5982d26";
+const multiFlowPumpAddressMainnet = "0xBA51AaaAa95bA1d5efB3cB1A3f50a09165315A17";
 const standardWellImplementationAddressMainnet = "0xBA510e11eEb387fad877812108a3406CA3f43a4B";
 
 function getWellComponentQuestionsArray() {

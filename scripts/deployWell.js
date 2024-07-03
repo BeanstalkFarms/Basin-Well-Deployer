@@ -69,6 +69,12 @@ async function deployWell() {
     maxLpSupplyDecrease: maxLpSupplyDecrease // bytes16
   };
 
+  console.log("Well Component Adresses: ")
+  console.log(`Well Function Address: ${wellFunctionAddress}`);
+  console.log(`Pump Address: ${pumpAddress}`);
+  console.log(`Well Implementation Address: ${wellImplementationAddress}`);
+  console.log("\n");
+
   const pumpData = await encodePumpData(alpha, capInterval, capReservesParameters);
 
   // salt validation
@@ -116,11 +122,6 @@ async function deployWell() {
 
   await askExitWithInitData(initData);
 
-  // Confirmation step
-  await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
-      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
-  await askForConfirmation(undefined, undefined, undefined, true)
-
   // Predict well address from input parameters
   const newWellAddress = await deployedAquifier.predictWellAddress(
     wellImplementationAddress,
@@ -128,6 +129,11 @@ async function deployWell() {
     salt
   );
   console.log(`\nPredicted Well Address: ${newWellAddress}`);
+
+  // Confirmation step
+  await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
+      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
+  await askForConfirmation(undefined, undefined, undefined, true)
 
   // DEPLOY WELL FUNCTION CALL
   console.log('Deploying new well...');

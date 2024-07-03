@@ -24,9 +24,12 @@ module.exports = {
       url: ALCHEMY_MAINNET_KEY,
       accounts: [PRIVATE_KEY]
     },
-    localhost: {
-      chainId: 1337
-    }
+    anvil: {
+      chainId: 31337,
+      url: "http://127.0.0.1:8545/",
+      timeout: 100000,
+      accounts: "remote"
+    },
   },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY,

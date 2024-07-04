@@ -17,6 +17,7 @@
     "@beanstalk/wells": "0.4.1",
     "@beanstalk/wells1.1": "npm:@beanstalk/wells@1.1.0-prerelease0",
     "@openzeppelin/contracts": "^5.0.2",
+    "abdk-libraries-solidity": "^3.2.0",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "ethers": "^6.10.0",

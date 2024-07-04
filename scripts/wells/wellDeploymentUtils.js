@@ -5,9 +5,12 @@ const hre = require("hardhat");
 function encodeWellImmutableData(aquifer, tokens, wellFunction, pumps) {
   let packedPumps = "0x";
   for (let i = 0; i < pumps.length; i++) {
-    let pumpDataLength = pumps[i].data.length;
+    //replace 0x with empty string and get the length of the data
+    let pumpDataLength = pumps[i].data.replace("0x", "").length;
+    // the data is in hex, so we need to divide by 2 to get the number of bytes
+    pumpDataLength = pumpDataLength / 2;
     console.log("pumps[i].target: ", pumps[i].target);
-    console.log("pumps[i].length: ", pumps[i].length);
+    console.log("pumps[i].length: ", pumpDataLength);
     console.log("pumps[i].data: ", pumps[i].data);
     packedPumps = hre.ethers.solidityPacked(
       ["bytes", "address", "uint256", "bytes"],

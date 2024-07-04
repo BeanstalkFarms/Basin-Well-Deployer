@@ -169,7 +169,8 @@ async function deployWell() {
     deployedAquifierAddress, // aquifer address
     tokens, // tokens array
     { target: wellFunctionAddress, data: "0x", length: 0 }, // well function object --> reference to Call struct
-    [{ target: pumpAddress, data: pumpData, length: 1 }] // array of pump objects --> references to Call struct
+    // lenght is the length of the pumpdata and computed in the encodeWellImmutableData function
+    [{ target: pumpAddress, data: pumpData}] // array of pump objects --> references to Call struct
   );
 
   console.log("\nImmutable data encoded...\n");

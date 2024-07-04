@@ -5,6 +5,7 @@ const hre = require("hardhat");
 function encodeWellImmutableData(aquifer, tokens, wellFunction, pumps) {
   let packedPumps = "0x";
   for (let i = 0; i < pumps.length; i++) {
+    let pumpDataLength = pumps[i].data.length;
     console.log("pumps[i].target: ", pumps[i].target);
     console.log("pumps[i].length: ", pumps[i].length);
     console.log("pumps[i].data: ", pumps[i].data);
@@ -13,7 +14,7 @@ function encodeWellImmutableData(aquifer, tokens, wellFunction, pumps) {
       [
         packedPumps, // previously packed pumps
         pumps[i].target, // pump address
-        pumps[i].length, // pump data length
+        pumpDataLength, // pump data length
         pumps[i].data, // pump data (bytes)
       ]
     );

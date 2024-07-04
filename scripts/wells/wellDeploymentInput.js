@@ -4,13 +4,11 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 
 // Sepolia addresses
-const aquifierAddressSepolia = "0x7aa056fCEf8F529E8C8e0732727F40748f49Bc1B";
 const constantProduct2AddressSepolia = "0x30Af8bc21683754086CDcb27C828FACAE85Cbcad";
 const multiFlowPumpAddressSepolia = "0x9A3AE9143753eFc2cC9583Eb03DEFaC75b649686";
 const standardWellImplementationAddressSepolia = "0x29F2f6EBA43ecE36a355D786FbF7Aa34432dB780";
 
 // Mainnet addresses
-const aquifierAddressMainnet = "0xBA51AAAA95aeEFc1292515b36D86C51dC7877773";
 const constantProduct2AddressMainnet = "0xBA150C2ae0f8450D4B832beeFa3338d4b5982d26";
 const multiFlowPumpAddressMainnet = "0xBA51AaaAa95bA1d5efB3cB1A3f50a09165315A17";
 const standardWellImplementationAddressMainnet = "0xBA510e11eEb387fad877812108a3406CA3f43a4B";
@@ -101,7 +99,6 @@ async function padPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrea
 }
 
 async function getWellPumpDataQuestionsArray() {
-  const hexzero = await hre.ethers.zeroPadValue("0x00", 16)
   const pumpDataQuestions = [
     {
       type: 'input',
@@ -141,7 +138,7 @@ async function getWellPumpDataQuestionsArray() {
 }
 
 async function printWellDefinition(token1Address, token2Address, wellFunctionAddress, 
-    pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network) {
+    pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network, newWellAddress) {
     console.log('\n///////////////// WELL DEPLOYMENT PARAMETERS ///////////////////////////');
     console.log('Token1: ', token1Address + ' (' + await getTokenSymbol(token1Address) + ')' );
     console.log('Token2: ', token2Address + ' (' + await getTokenSymbol(token2Address) + ')' );
@@ -152,13 +149,11 @@ async function printWellDefinition(token1Address, token2Address, wellFunctionAdd
     console.log('Well Symbol: ', wellSymbol);
     console.log('Salt: ', salt);
     console.log('Network: ', network);
+    console.log('Predicted Well Address: ', newWellAddress);
 }
 
 // Function to get configuration based on component type
 function getConfigByComponentType(componentType) {
-
-    // Central configuration repository
-    // TODO: Move everyhting to a json file like the pump registry
     const componentConfigs = {
       wellFunction: {
         'ConstantProduct2': {
@@ -202,7 +197,7 @@ function mapComponentDetails(componentType, key, network) {
     }
     // Return details with the address potentially being a function of the network
     return {
-        address: typeof detailConfig.address === 'function' ? detailConfig.address(network) : detailConfig.address,
+        address: detailConfig.address,
         name: detailConfig.name,
         symbol: detailConfig.symbol
     };

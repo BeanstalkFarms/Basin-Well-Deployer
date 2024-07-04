@@ -128,11 +128,10 @@ async function deployWell() {
     immutableData,
     salt
   );
-  console.log(`\nPredicted Well Address: ${newWellAddress}`);
 
   // Confirmation step
   await printWellDefinition(token1Address, token2Address, wellFunctionAddress,
-      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network);
+      pumpAddress, wellImplementationAddress, wellName, wellSymbol, salt, network, newWellAddress);
   await askForConfirmation(undefined, undefined, undefined, true)
 
   // DEPLOY WELL FUNCTION CALL

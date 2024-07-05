@@ -3,22 +3,25 @@ pragma solidity ^0.8.20;
 
 import {LibClone} from "./LibClone.sol";
 
-contract Salt {
+contract MineSalt {
     using LibClone for address;
 
-    address constant WELL_DEPLOYER = 0x7eaE23DD0f0d8289d38653BCE11b92F7807eFB64; // TODO: Set
+    address wellDeployer;
     address constant AQUIFER = 0xBA51AAAA95aeEFc1292515b36D86C51dC7877773;
     address constant WELL_IMPLEMENTATION = 0xBA510e11eEb387fad877812108a3406CA3f43a4B;
-    bytes IMMUTABLE_DATA =
-        hex"ba51aaaa95aeefc1292515b36d86c51dc78777730000000000000000000000000000000000000000000000000000000000000002ba510c20fd2c52e4cb0d23cfc3ccd092f9165a6e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000bea0000029ad1c77d3d5d23ba2d8893db9d1efab000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2ba510f10e3095b83a0f33aa9ad2544e22570a87c0000000000000000000000000000000000000000000000000000000000000000";
+    bytes immutableData;
 
-    string constant targetPrefix = "ba510";
-    uint256 CHARACTERS = 5;
+    string targetPrefix;
+    uint256 characters;
 
     uint256 attemptsPerRun;
 
-    constructor(uint256 _attemptsPerRun) {
+    constructor(uint256 _attemptsPerRun, address _wellDeployer, bytes memory _immutableData, string memory _targetPrefix, uint256 _characters) {
+        wellDeployer = _wellDeployer;
         attemptsPerRun = _attemptsPerRun;
+        immutableData = _immutableData;
+        targetPrefix = _targetPrefix;
+        characters = _characters;
     }
 
     function checkForAddress(uint256 start) external view returns (address a, string memory str, bytes32 s) {
@@ -34,9 +37,9 @@ contract Salt {
     }
 
     function checkSalt(bytes32 salt, bytes32 targetHash) internal view returns (address, string memory) {
-        bytes memory initData = IMMUTABLE_DATA;
-        address well = predictWellAddress(AQUIFER, WELL_DEPLOYER, WELL_IMPLEMENTATION, initData, salt);
-        string memory wellString = toHexString(well, CHARACTERS);
+        bytes memory initData = immutableData;
+        address well = predictWellAddress(AQUIFER, wellDeployer, WELL_IMPLEMENTATION, initData, salt);
+        string memory wellString = toHexString(well, characters);
 
         if (keccak256(abi.encodePacked(wellString)) == targetHash) {
             return (well, wellString);

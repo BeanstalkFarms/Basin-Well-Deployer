@@ -10,12 +10,16 @@ function encodeWellImmutableData(
   ) {
     let packedPumps = '0x';
     for (let i = 0; i < pumps.length; i++) {
+        // pump data length is the length of the data in bytes
+        // since the data is a hex string, we need to divide by 2
+        let pumpDataLength = pumps[i].data.replace('0x', '').length / 2;
+        console.log('pumpDataLength: ', pumpDataLength);
         packedPumps = hre.ethers.solidityPacked(
             ['bytes', 'address', 'uint256', 'bytes'],
             [
                 packedPumps,           // previously packed pumps
                 pumps[i].target,       // pump address
-                pumps[i].length,       // pump data length
+                pumpDataLength,       // pump data length
                 pumps[i].data          // pump data (bytes)
             ]
         )

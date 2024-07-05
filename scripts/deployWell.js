@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {encodeInitFunctionCall, encodeWellImmutableData, encodePumpData, getTokenSymbol, getWellName} = require('./wells/wellDeploymentUtils');
-const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray, askExitWithInitData, padPumpData} = require('./wells/wellDeploymentInput');
+const {encodeInitFunctionCall, encodeWellImmutableData, encodePumpData} = require('./wells/wellDeploymentUtils');
+const {getWellComponentQuestionsArray, getWellDataQuestionsArray, validateWellInput, mapComponentDetails, printWellDefinition, getWellPumpDataQuestionsArray, askExitWithWellData, convertPumpData} = require('./wells/wellDeploymentInput');
 const { askForConfirmation, deployMockERC20 } = require('./generalUtils');
 
 // Sepolia factory address
@@ -55,7 +55,7 @@ async function deployWell() {
   ///////////////////////////// PUMP DATA /////////////////////////////
   const pumpDataQuestions = await getWellPumpDataQuestionsArray();
   let { alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease } = await inquirer.prompt(pumpDataQuestions);
-  [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease] = await padPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease);
+  [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease] = await convertPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease);
 
   // construct the capReservesParameters struct
   // struct CapReservesParameters {
@@ -120,7 +120,7 @@ async function deployWell() {
   console.log('\nInit data encoded...\n')
   console.log(initData)
 
-  await askExitWithInitData(initData);
+  await askExitWithWellData(immutableData);
 
   // Predict well address from input parameters
   const newWellAddress = await deployedAquifier.predictWellAddress(

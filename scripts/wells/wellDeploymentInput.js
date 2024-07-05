@@ -75,6 +75,39 @@ async function getWellDataQuestionsArray(token1Address, token2Address, wellFunct
       ];
 }
 
+async function convertPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease) {
+  // Convert alpha to bytes16
+  alpha = await padToBytes16(alpha); // bytes16
+  capInterval = await padToBytes16(capInterval); // uint256
+  for (let i = 0; i < maxRateChanges.length; i++) {
+    for (let j = 0; j < maxRateChanges[i].length; j++) {
+      maxRateChanges[i][j] = floatToIEEE754Hex(maxRateChanges[i][j]);
+    }
+  }
+  maxLpSupplyIncrease = floatToIEEE754Hex(maxLpSupplyIncrease);
+  maxLpSupplyDecrease = floatToIEEE754Hex(maxLpSupplyDecrease);
+
+  console.log('alpha: ', alpha);
+  console.log('capInterval: ', capInterval);
+  console.log('maxRateChanges: ', maxRateChanges);
+  console.log('maxLpSupplyIncrease: ', maxLpSupplyIncrease);
+  console.log('maxLpSupplyDecrease: ', maxLpSupplyDecrease);
+
+  return [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease];
+}
+
+function floatToIEEE754Hex(value) {
+  const buffer = new ArrayBuffer(4); // 4 bytes for single precision float
+  const view = new DataView(buffer);
+  view.setFloat32(0, value, false); // Set the float (big-endian by default)
+  let hex = '';
+  for (let i = 0; i < 4; i++) {
+      const byte = view.getUint8(i).toString(16).padStart(2, '0');
+      hex += byte;
+  }
+  hex = hex.padStart(32, '0'); // Pad to 32 characters (16 bytes)
+  return `0x${hex}`;
+}
 
 async function padToBytes16(value) {
   // if value is less than 10, pad with 0
@@ -82,20 +115,6 @@ async function padToBytes16(value) {
   // convert to hex with 0x prefix
   const hexValue = '0x' + value.toString();
   return await hre.ethers.zeroPadValue(hexValue, 16);
-}
-
-
-async function padPumpData(alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease) {
-  alpha = await padToBytes16(alpha);
-  capInterval = await padToBytes16(capInterval);
-  for (let i = 0; i < maxRateChanges.length; i++) {
-    for (let j = 0; j < maxRateChanges[i].length; j++) {
-      maxRateChanges[i][j] = await padToBytes16(maxRateChanges[i][j]);
-    }
-  }
-  maxLpSupplyIncrease = await padToBytes16(maxLpSupplyIncrease);
-  maxLpSupplyDecrease = await padToBytes16(maxLpSupplyDecrease);
-  return [alpha, capInterval, maxRateChanges, maxLpSupplyIncrease, maxLpSupplyDecrease];
 }
 
 async function getWellPumpDataQuestionsArray() {
@@ -117,21 +136,21 @@ async function getWellPumpDataQuestionsArray() {
       name: 'maxRateChanges',
       message: 'Enter the max rate changes for the pump (bytes16[][])',
       default: [
-        ["00", "12"],
-        ["12", "00"]
+        [0.3, 0],
+        [0, 0.3]
       ]
     },
     {
       type: 'input',
       name: 'maxLpSupplyIncrease',
       message: 'Enter the max LP supply increase for the pump (bytes16)',
-      default: 16
+      default: 0.3
     },
     {
       type: 'input',
       name: 'maxLpSupplyDecrease',
       message: 'Enter the max LP supply decrease for the pump (bytes16)',
-      default: 16
+      default: 0.3
     }
   ];
   return pumpDataQuestions;
@@ -197,7 +216,7 @@ function mapComponentDetails(componentType, key, network) {
     }
     // Return details with the address potentially being a function of the network
     return {
-        address: detailConfig.address,
+        address: typeof detailConfig.address === 'function' ? detailConfig.address(network) : detailConfig.address,
         name: detailConfig.name,
         symbol: detailConfig.symbol
     };
@@ -219,12 +238,12 @@ function validateWellInput(token1Address, token2Address) {
     }
 }
 
-async function askExitWithInitData(initData) {
+async function askExitWithWellData(wellData) {
   const message = "\nNow that init data has been encoded, you can mine for a salt for a vanity well address or proceed with the deployment of the well. Would you like to proceed with the deployment? (y/n)"
   const { proceed } = await inquirer.prompt( { type: 'input', name: 'proceed', message: message , default: "y"});
   if (proceed.toLowerCase() !== "y" && proceed.toLowerCase() !== "yes") {
-    await fs.writeFileSync('wellInitData.txt', initData);
-    console.log('\nInit data have been saved to wellInitData.txt. Use them to mine for a salt and come back to deploy the well.')
+    await fs.writeFileSync('wellData.txt', wellData);
+    console.log('\Well data have been saved to wellData.txt. Use them to mine for a salt and come back to deploy the well.')
     console.log('Exiting...');
     process.exit(0);
   }
@@ -237,6 +256,6 @@ module.exports = {
     printWellDefinition,
     mapComponentDetails,
     getWellPumpDataQuestionsArray,
-    padPumpData,
-    askExitWithInitData
+    convertPumpData,
+    askExitWithWellData
 };
